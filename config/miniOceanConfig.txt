@@ -1,0 +1,7 @@
+{"scenario":"Real",
+ "saveIntS":1200, 
+"saveFile":"C:/Users/Neio3/Desktop/Fordypningsprosjekt/pyMiniOcean/output_files/real_gin.nc",
+"realInitFile":"C:/Users/Neio3/Desktop/Fordypningsprosjekt/sinmod/Nor4km_PhysStates.nc",
+"realInitSample":75,
+"realTile":[25, 46, 25, 46],
+"realAtmoFile":"C:/Users/Neio3/Desktop/Fordypningsprosjekt/sinmod/Nor4km_atmo_converted.nc"}

@@ -11,6 +11,7 @@ import time
 from mpi4py import MPI
 import mpi
 import utils
+import decideSubArea
 import sys
 
 # Initialize sim settings:
@@ -43,6 +44,13 @@ if doMpi:
     #    statusfile = open('status.txt', 'w')
 else:
     print("One process only, disabling MPI communication.")
+
+
+#####################################################################
+strrank = str(rank)
+filePath = "C:/Users/Neio3/Desktop/Fordypningsprosjekt/pyMiniOcean/output_files/"
+inputFileName = filePath + "init_" + str(np.char.zfill(strrank, 3)) + ".nc"
+#####################################################################
 
 
 if coldStart:
@@ -82,23 +90,24 @@ t0 = time.time() # For timing purposes only
 # rank = 2
 # pos = (2, 0)
 
-if doMpi:
-    # Make note of the full model dimensions, then determine which slice this instance
-    # is going to cover.
-    fullDims = (os.imax, os.jmax, os.kmax) # Dimensions of full model domain
-    fullDepth = os.depth
-    sliceNoHalo = mpi.getSlice(splits, pos, os.imax, os.jmax)
-    slice = mpi.getSliceWithHalo(splits, pos, os.imax, os.jmax)
-    myHalo = (sliceNoHalo[0]-slice[0], slice[1]-sliceNoHalo[1], \
-              sliceNoHalo[2] - slice[2], slice[3] - sliceNoHalo[3])
-    # Slice down the model domain to the correct slice:
-    os.reduceToSlice(slice)
+# if doMpi:
+#     # Make note of the full model dimensions, then determine which slice this instance
+#     # is going to cover.
+#     fullDims = (os.imax, os.jmax, os.kmax) # Dimensions of full model domain
+#     fullDepth = os.depth
+#     sliceNoHalo = mpi.getSlice(splits, pos, os.imax, os.jmax)
+#     slice = mpi.getSliceWithHalo(splits, pos, os.imax, os.jmax)
+#     myHalo = (sliceNoHalo[0]-slice[0], slice[1]-sliceNoHalo[1], \
+#               sliceNoHalo[2] - slice[2], slice[3] - sliceNoHalo[3])
+#     # Slice down the model domain to the correct slice:
+#     os.reduceToSlice(slice)
+#
+# else:
 
-else:
-    fullDims = (os.imax, os.jmax, os.kmax)  # Dimensions of full model domain
-    fullDepth = os.depth
-    slice = (0, os.imax, 0, os.jmax)
-    myHalo = None
+fullDims = (os.imax, os.jmax, os.kmax)  # Dimensions of full model domain
+fullDepth = os.depth
+slice = (0, os.imax, 0, os.jmax)
+myHalo = None
 
 
 nSamples = int(sp.tEnd/sp.dt)
@@ -116,6 +125,21 @@ if sp.recordAverages:
     aver = calcAverage.Average(os)
 
 
+#############################################################################################
+
+doMpi= False
+
+#The size of our "sub-sub" area (MUST BE SMALLER OR SAME SIZE AS AREA SET IN miniOceanConfig.txt)
+
+imax_input = 5
+jmax_input = 5
+kmax_input = 1
+
+#Randomly choose our "sub-sub" area within our subarea set in config file
+iStart, iEnd, jStart, jEnd = decideSubArea.decideSubArea(os, os.imax, os.jmax, imax_input, jmax_input, kmax_input)
+
+
+#################################################################################################
 
 for sample in range(0,nSamples):
 
@@ -153,6 +177,14 @@ for sample in range(0,nSamples):
     if sp.passiveTracer:
         advection.advectPassiveTracer(os, sp)
         os.X[1:-1,1:-1,:] = os.X_next[1:-1,1:-1,:]
+
+
+########################## Saving initial values ###################################
+    if sample == 0:
+        netcdfStorage.initInputFile(inputFileName, iStart, iEnd, jStart, jEnd, kmax_input, os.depth, os.layerDepths)
+        netcdfStorage.saveInputFile(inputFileName, iStart, iEnd, jStart, jEnd, kmax_input, os)
+#################################################################################
+
 
     # Calculate U, V and E for next time step. Calculation method depends on simulation settings:
     if sp.modeSplittingOn:
@@ -225,33 +257,4 @@ for sample in range(0,nSamples):
                 osAll = mpi.collectAll(comm, rank, pos, splits, myHalo, os, fullDims, fullDepth, sp)
             else:
                 osAll = os
-            # # plt.figure()
-            # # plt.quiver(osAll.U[:,:-1,0], osAll.V[:-1,:,0])
-            # speed = np.transpose(np.multiply(osAll.U[:, :-1, 0], osAll.U[:, :-1, 0]) +
-            #                      np.multiply(osAll.V[:-1, :, 0], osAll.V[:-1, :, 0]))
-            #
-            # #g1.clear()
-            # g2.clear()
-            # g3.clear()
-            # g4.clear()
-            # #g1.pcolor(speed)
-            # p1.set_array(speed)
-            # p1.autoscale()
-            #
-            # g2.quiver(np.transpose(osAll.U[:, :-1, 0]), np.transpose(osAll.V[:-1, :, 0]))
-            # g3.pcolor(np.transpose(osAll.W[:, :, 1]))
-            # g4.pcolor(np.transpose(osAll.E[:, :]))
-            # #plt.subplot(2, 2, 1), plt.pcolor(speed), plt.colorbar()
-            # #plt.subplot(2, 2, 2), plt.quiver(np.transpose(osAll.U[:, :-1, 0]),
-            # #                                 np.transpose(osAll.V[:-1, :, 0]))
-            # #plt.subplot(2, 2, 3), plt.pcolor(np.transpose(osAll.W[:, :, 1])), plt.colorbar()
-            # #plt.subplot(2, 2, 4), plt.pcolor(np.transpose(osAll.E[:, :])), plt.colorbar()
-            #
-            #
-            # plt.draw_all()
-            # plt.draw()
-            # plt.pause(0.01)  # is necessary for the plot to update for some reason
-            #
-            # print("updated plot")
-
 

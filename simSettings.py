@@ -20,8 +20,15 @@ class SimSettings:
         self.saveIntS = config['saveIntS']
         self.saveFile = config['saveFile']
         self.saveAvgIntS = 24*3600
-        self.saveAvgFile = 'C:/temp/aver1.nc'
-        self.saveSubsetFile = 'C:/temp/real_gin_subset.nc'
+
+        #self.saveFile = 'C:/Users/Neio3/Desktop/Fordypningsprosjekt/pyMiniOcean/output_files/real_gin.nc'
+        #self.saveAvgFile = 'C:/Users/Neio3/Desktop/Fordypningsprosjekt/pyMiniOcean/output_files/aver1.nc'
+       # self.saveSubsetFile = 'C:/Users/Neio3/Desktop/Fordypningsprosjekt/pyMiniOcean/output_files/real_gin_subset.nc'
+
+       # self.saveInputArea = 'C:/Users/Neio3/Desktop/Fordypningsprosjekt/pyMiniOcean/output_files/input_real_sub_area.nc'
+        #self.saveOutputArea = 'C:/Users/Neio3/Desktop/Fordypningsprosjekt/pyMiniOcean/output_files/output_real_sub_area.nc'
+
+
 
 
         # Activate/deactivate features:

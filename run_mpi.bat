@@ -1,1 +1,1 @@
-mpiexec -n 6 c:\Users\alver\AppData\Local\Programs\Python\Python37\python main.py
+mpiexec -n 6 C:\Users\Neio3\AppData\Local\Programs\Python\Python38-32\python main.py
