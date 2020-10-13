@@ -5,15 +5,15 @@ def decideSubArea(os,imax,jmax, imax_sub,jmax_sub,kmax_sub):
    areaTooShallow = True
 
    while areaTooShallow:
-      iStart = np.random.randint(0,imax-imax_sub+1)
+      iStart = np.random.randint(0, imax-imax_sub)
       iEnd = iStart+imax_sub
 
-      jStart = np.random.randint(0,jmax-jmax_sub+1)
+      jStart = np.random.randint(0, jmax-jmax_sub)
       jEnd = jStart+jmax_sub
 
       shouldLoop = True
-      for i in range(iStart,iEnd):
-         for j in range(jStart,jEnd):
+      for i in range(iStart, iEnd):
+         for j in range(jStart, jEnd):
             if os.kmm[i, j] < kmax_sub:
                shouldLoop = False
                break
