@@ -56,6 +56,11 @@ def initInputFile(filename,iStart, iEnd, jStart, jEnd, kEnd, depth, layerDepths)
     y_dim = nf.createDimension("yc", jEnd-jStart)
     z_dim = nf.createDimension("zc", kEnd)
 
+    t_dim = nf.createDimension('time', None)
+    #run_dim = nf.createDimension('run', None) #unlimited size already in use?
+
+
+
     x_bound_dim = nf.createDimension("xc_b", 2*(jEnd-jStart))
     y_bound_dim = nf.createDimension("yc_b", 2*(iEnd-iStart))
     e_bound_dim = nf.createDimension("ec_b", 2*(iEnd-iStart) + 2*(jEnd-jStart))
@@ -95,15 +100,6 @@ def saveInputFile(filename, iStart, iEnd, jStart, jEnd, kEnd, os):
     nf.variables['windU'][:, :-1] = np.transpose(os.windU[iStart:iEnd-1 , jStart:jEnd])
     nf.variables['windV'][:-1, :] = np.transpose(os.windV[iStart:iEnd, jStart:jEnd -1])
 
-
-
-    print(np.transpose(os.U[iStart-1, jStart:jEnd, 0:kEnd]),"U_1")
-    print(np.transpose(os.U[iEnd-1, jStart:jEnd, 0:kEnd]), "U_2")
-
-#    print(np.transpose(os.V[iStart:iEnd, jStart - 1, 0:kEnd]), "V_1")
- #   print(np.transpose(os.V[iStart:iEnd, jEnd-1, 0:kEnd]), "V_2")
-
-
     nf.variables['U_b'][:, :(jEnd-jStart)] = np.transpose(os.U[iStart-1, jStart:jEnd, 0:kEnd])
     nf.variables['U_b'][:, (jEnd-jStart):] = np.transpose(os.U[iEnd-1, jStart:jEnd, 0:kEnd])
 
@@ -114,6 +110,8 @@ def saveInputFile(filename, iStart, iEnd, jStart, jEnd, kEnd, os):
     nf.variables['E_b'][(iEnd-iStart):2*(iEnd-iStart)] = np.transpose(os.E[iStart:iEnd,jEnd])
     nf.variables['E_b'][2*(iEnd-iStart):2*(iEnd-iStart)+(jEnd-jStart)] = np.transpose(os.E[iStart-1, jStart:jEnd])
     nf.variables['E_b'][2*(iEnd-iStart)+(jEnd-jStart):2*(iEnd-iStart)+2*(jEnd-jStart)] = np.transpose(os.E[iEnd, jStart:jEnd])
+
+
     nf.close()
 
 
