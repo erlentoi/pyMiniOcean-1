@@ -12,6 +12,7 @@ from mpi4py import MPI
 import mpi
 import utils
 import decideSubArea
+from pathlib import Path
 import sys
 
 # Initialize sim settings:
@@ -126,18 +127,16 @@ if sp.recordAverages:
 
 
 #############################################################################################
-
 doMpi= False
 
 #The size of our "sub-sub" area (MUST BE SMALLER OR SAME SIZE AS AREA SET IN miniOceanConfig.txt)
 
 imax_input = 5
 jmax_input = 5
-kmax_input = 1
+kmax_input = 2
 
 #Randomly choose our "sub-sub" area within our subarea set in config file
 iStart, iEnd, jStart, jEnd = decideSubArea.decideSubArea(os, os.imax, os.jmax, imax_input, jmax_input, kmax_input)
-
 
 #################################################################################################
 
@@ -181,8 +180,13 @@ for sample in range(0,nSamples):
 
 ########################## Saving initial values ###################################
     if sample == 0:
-        netcdfStorage.initInputFile(inputFileName, iStart, iEnd, jStart, jEnd, kmax_input, os.depth, os.layerDepths)
-        netcdfStorage.saveInputFile(inputFileName, iStart, iEnd, jStart, jEnd, kmax_input, os)
+        if Path(inputFileName).exists():
+            netcdfStorage.saveInputFile(inputFileName, iStart, iEnd, jStart, jEnd, kmax_input, os, 0, sp.tEnd)
+        else:
+            netcdfStorage.initInputFile(inputFileName, iStart, iEnd, jStart, jEnd, kmax_input, os.depth, os.layerDepths,
+                                        saveIntSamples, nSamples)
+            netcdfStorage.saveInputFile(inputFileName, iStart, iEnd, jStart, jEnd, kmax_input, os, 0, sp.tEnd)
+
 #################################################################################
 
 
@@ -235,17 +239,16 @@ for sample in range(0,nSamples):
         else:
             osAll = os
         # The actual save is performed by rank 0 only:
-        if rank==0:
-
             # Initialize file if this is first save:
-            if firstSave:
-                firstSave = False
-                netcdfStorage.initSaveFile(sp.saveFile, osAll.imax, osAll.jmax, osAll.kmax, osAll.depth, osAll.layerDepths)
-                #netcdfStorage.initSaveSubsetFile(sp.saveSubsetFile, 10, 20, 10, 18, 5, osAll.depth, osAll.layerDepths)
+        if firstSave:
+            firstSave = False
+            netcdfStorage.initSaveFile(sp.saveFile, osAll.imax, osAll.jmax, osAll.kmax, osAll.depth, osAll.layerDepths)
+            #netcdfStorage.initSaveSubsetFile(sp.saveSubsetFile, 10, 20, 10, 18, 5, osAll.depth, osAll.layerDepths)
 
-            # Save state:
-            netcdfStorage.saveState(sp.saveFile, t, osAll)
-            #netcdfStorage.saveStateSubset(sp.saveSubsetFile, 10, 20, 10, 18, 5, 0, osAll)
+        # Save state:
+        netcdfStorage.saveState(sp.saveFile, t, osAll)
+        netcdfStorage.saveInputFile(inputFileName, iStart, iEnd, jStart, jEnd, kmax_input, os, t, sp.tEnd)
+        #netcdfStorage.saveStateSubset(sp.saveSubsetFile, 10, 20, 10, 18, 5, 0, osAll)
 
     # See if we should plot or update plots:
     if rank==0 and plotInt > 0:

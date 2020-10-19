@@ -4,6 +4,8 @@ from scipy.io import netcdf
 import numpy as np
 from netCDF4 import Dataset
 import datetime
+from pathlib import Path
+
 import utils
 
 def initSaveFile(filename, imax, jmax, kmax, depth, layerDepths):
@@ -28,7 +30,7 @@ def initSaveFile(filename, imax, jmax, kmax, depth, layerDepths):
     nf.createVariable("windV", "f8", ('time', 'yc', 'xc'))
     # Grid and depth information:
     nf.variables['zc'][:] = layerDepths
-    nf.variables['depth'][:,:] = np.transpose(depth)
+    nf.variables['depth'][:, :] = np.transpose(depth)
     #print(nf.variables)
     nf.close()
 
@@ -49,69 +51,86 @@ def saveState(filename, time, os):
 
 
 
-def initInputFile(filename,iStart, iEnd, jStart, jEnd, kEnd, depth, layerDepths):
+def initInputFile(filename,iStart, iEnd, jStart, jEnd, kEnd, depth, layerDepths,saveIntSamples, nSamples):
+
 
     nf = Dataset(filename, "w", format="NETCDF3_CLASSIC")
+
     x_dim = nf.createDimension("xc", iEnd-iStart)   #Fjernet time dimensjonen
     y_dim = nf.createDimension("yc", jEnd-jStart)
     z_dim = nf.createDimension("zc", kEnd)
 
-    t_dim = nf.createDimension('time', None)
-    #run_dim = nf.createDimension('run', None) #unlimited size already in use?
+    n_time_samples = nSamples/saveIntSamples
 
+    t_dim = nf.createDimension('time', 1 + int(n_time_samples)) #initaltilstandene + tilstandene for alle tidssamplinger
+    run_dim = nf.createDimension('run', None)
 
 
     x_bound_dim = nf.createDimension("xc_b", 2*(jEnd-jStart))
     y_bound_dim = nf.createDimension("yc_b", 2*(iEnd-iStart))
     e_bound_dim = nf.createDimension("ec_b", 2*(iEnd-iStart) + 2*(jEnd-jStart))
 
+    nf.createVariable("run", "f8", ('run',))
+    nf.createVariable("time", "f8", ('time',))
     nf.createVariable("zc", "f8", ('zc',))
     nf.createVariable("depth", "f8", ('yc', 'xc'))
-    nf.createVariable("U", "f8", ('zc', 'yc', 'xc'))
-    nf.createVariable("V", "f8", ('zc', 'yc', 'xc'))
-    nf.createVariable("W", "f8", ('zc', 'yc', 'xc'))
-    nf.createVariable("T", "f8", ('zc', 'yc', 'xc'))
-    nf.createVariable("S", "f8", ('zc', 'yc', 'xc'))
-    nf.createVariable("E", "f8", ('yc', 'xc'))
-    nf.createVariable("X", "f8", ('zc', 'yc', 'xc'))
+    nf.createVariable("U", "f8", ('run', 'time', 'zc', 'yc', 'xc'))
+    nf.createVariable("V", "f8", ('run', 'time', 'zc', 'yc', 'xc'))
+    nf.createVariable("W", "f8", ('run', 'time', 'zc', 'yc', 'xc'))
+    nf.createVariable("T", "f8", ('run', 'time', 'zc', 'yc', 'xc'))
+    nf.createVariable("S", "f8", ('run', 'time', 'zc', 'yc', 'xc'))
+    nf.createVariable("E", "f8", ('run', 'time', 'yc', 'xc'))
+    nf.createVariable("X", "f8", ('run', 'time', 'zc', 'yc', 'xc'))
 
-    nf.createVariable("windU", "f8", ('yc', 'xc'))
-    nf.createVariable("windV", "f8", ('yc', 'xc'))
+    nf.createVariable("windU", "f8", ('run', 'time', 'yc', 'xc'))
+    nf.createVariable("windV", "f8", ('run', 'time', 'yc', 'xc'))
 
-    nf.createVariable("U_b", "f8", ('zc', 'yc_b'))
-    nf.createVariable("V_b", "f8", ('zc', 'xc_b'))
-    nf.createVariable("E_b", "f8", 'ec_b')
+    nf.createVariable("U_b", "f8", ('run', 'time', 'zc', 'yc_b'))
+    nf.createVariable("V_b", "f8", ('run', 'time', 'zc', 'xc_b'))
+    nf.createVariable("E_b", "f8", ('run', 'time', 'ec_b'))
     nf.variables['zc'][:] = layerDepths[0:kEnd]
     nf.variables['depth'][:] = np.transpose(depth[iStart:iEnd, jStart:jEnd])
     #print(nf.variables)
     nf.close()
 
-def saveInputFile(filename, iStart, iEnd, jStart, jEnd, kEnd, os):
-
+def saveInputFile(filename, iStart, iEnd, jStart, jEnd, kEnd, os, time, tEnd):
+    ""
     nf = Dataset(filename, "a", format="NETCDF3_CLASSIC")
-    nf.variables['U'][:, :, :-1] = np.transpose(os.U[iStart:iEnd - 1, jStart:jEnd, 0:kEnd], (2, 1, 0))
-    nf.variables['V'][:, :-1, :] = np.transpose(os.V[iStart:iEnd, jStart:jEnd - 1, 0:kEnd], (2, 1, 0))
-    nf.variables['W'][...] = np.transpose(os.W[iStart:iEnd, jStart:jEnd, 0:kEnd], (2, 1, 0))      # Fjernet tidindekseringen
-    nf.variables['T'][...] = np.transpose(os.T[iStart:iEnd, jStart:jEnd, 0:kEnd], (2, 1, 0))
-    nf.variables['S'][...] = np.transpose(os.S[iStart:iEnd, jStart:jEnd, 0:kEnd], (2, 1, 0))
-    nf.variables['E'][...] = np.transpose(os.E[iStart:iEnd, jStart:jEnd])
-    nf.variables['X'][...] = np.transpose(os.X[iStart:iEnd, jStart:jEnd, 0:kEnd], (2, 1, 0))
 
-    nf.variables['windU'][:, :-1] = np.transpose(os.windU[iStart:iEnd-1 , jStart:jEnd])
-    nf.variables['windV'][:-1, :] = np.transpose(os.windV[iStart:iEnd, jStart:jEnd -1])
+    time_indx = int((time/tEnd) * nf.variables['time'].shape[0])
+    if time == tEnd:
+        time_indx = time_indx-1
+    nf.variables['time'][time_indx] = time
 
-    nf.variables['U_b'][:, :(jEnd-jStart)] = np.transpose(os.U[iStart-1, jStart:jEnd, 0:kEnd])
-    nf.variables['U_b'][:, (jEnd-jStart):] = np.transpose(os.U[iEnd-1, jStart:jEnd, 0:kEnd])
+    run_indx = nf.variables['run'].shape[0]-1
+    if time == 0:
+        print("Ny run")
+        print(nf.variables['run'].shape[0], "shape før")
+        run_indx = nf.variables['run'].shape[0]
+        nf.variables['run'][int(run_indx)] = int(run_indx) ###Setter NESTE indeks
+        print(nf.variables['run'].shape[0], "shape etter")
 
-    nf.variables['V_b'][:, :(iEnd - iStart)] = np.transpose(os.V[iStart:iEnd, jStart-1, 0:kEnd])
-    nf.variables['V_b'][:, (iEnd - iStart):] = np.transpose(os.V[iStart:iEnd, jEnd-1, 0:kEnd])
+    nf.variables['U'][run_indx, time_indx, :, :, :-1] = np.transpose(os.U[iStart:iEnd - 1, jStart:jEnd, 0:kEnd], (2, 1, 0))
+    nf.variables['V'][run_indx, time_indx, :, :-1, :] = np.transpose(os.V[iStart:iEnd, jStart:jEnd - 1, 0:kEnd], (2, 1, 0))
+    nf.variables['W'][run_indx, time_indx, ...] = np.transpose(os.W[iStart:iEnd, jStart:jEnd, 0:kEnd], (2, 1, 0))      # Fjernet tidindekseringen
+    nf.variables['T'][run_indx, time_indx, ...] = np.transpose(os.T[iStart:iEnd, jStart:jEnd, 0:kEnd], (2, 1, 0))
+    nf.variables['S'][run_indx, time_indx, ...] = np.transpose(os.S[iStart:iEnd, jStart:jEnd, 0:kEnd], (2, 1, 0))
+    nf.variables['E'][run_indx, time_indx, ...] = np.transpose(os.E[iStart:iEnd, jStart:jEnd])
+    nf.variables['X'][run_indx, time_indx, ...] = np.transpose(os.X[iStart:iEnd, jStart:jEnd, 0:kEnd], (2, 1, 0))
 
-    nf.variables['E_b'][:(iEnd-iStart)] = np.transpose(os.E[iStart:iEnd,jStart-1])
-    nf.variables['E_b'][(iEnd-iStart):2*(iEnd-iStart)] = np.transpose(os.E[iStart:iEnd,jEnd])
-    nf.variables['E_b'][2*(iEnd-iStart):2*(iEnd-iStart)+(jEnd-jStart)] = np.transpose(os.E[iStart-1, jStart:jEnd])
-    nf.variables['E_b'][2*(iEnd-iStart)+(jEnd-jStart):2*(iEnd-iStart)+2*(jEnd-jStart)] = np.transpose(os.E[iEnd, jStart:jEnd])
+    nf.variables['windU'][run_indx, time_indx, :, :-1] = np.transpose(os.windU[iStart:iEnd-1 , jStart:jEnd])
+    nf.variables['windV'][run_indx, time_indx, :-1, :] = np.transpose(os.windV[iStart:iEnd, jStart:jEnd -1])
 
+    nf.variables['U_b'][run_indx, time_indx, :, :(jEnd-jStart)] = np.transpose(os.U[iStart-1, jStart:jEnd, 0:kEnd])
+    nf.variables['U_b'][run_indx, time_indx, :, (jEnd-jStart):] = np.transpose(os.U[iEnd-1, jStart:jEnd, 0:kEnd])
 
+    nf.variables['V_b'][run_indx, time_indx, :, :(iEnd - iStart)] = np.transpose(os.V[iStart:iEnd, jStart-1, 0:kEnd])
+    nf.variables['V_b'][run_indx, time_indx, :, (iEnd - iStart):] = np.transpose(os.V[iStart:iEnd, jEnd-1, 0:kEnd])
+
+    nf.variables['E_b'][run_indx, time_indx, :(iEnd-iStart)] = np.transpose(os.E[iStart:iEnd,jStart-1])
+    nf.variables['E_b'][run_indx, time_indx, (iEnd-iStart):2*(iEnd-iStart)] = np.transpose(os.E[iStart:iEnd,jEnd])
+    nf.variables['E_b'][run_indx, time_indx, 2*(iEnd-iStart):2*(iEnd-iStart)+(jEnd-jStart)] = np.transpose(os.E[iStart-1, jStart:jEnd])
+    nf.variables['E_b'][run_indx, time_indx, 2*(iEnd-iStart)+(jEnd-jStart):2*(iEnd-iStart)+2*(jEnd-jStart)] = np.transpose(os.E[iEnd, jStart:jEnd])
     nf.close()
 
 
@@ -140,9 +159,9 @@ def initSaveSubsetFile(filename, iStart, iEnd, jStart, jEnd, kEnd, depth, layerD
     #print(nf.variables)
     nf.close()
 
-def saveStateSubset(filename, iStart, iEnd, jStart, jEnd, kEnd, time, os):
+def saveStateSubset(filename, iStart, iEnd, jStart, jEnd, kEnd, time, os): ###LAGRE OUTPUT, TA MED RUN!!!!!!!!!!
     nf = Dataset(filename, "a", format="NETCDF3_CLASSIC")
-    indx = nf.variables['time'].shape[0]
+    indx = nf.variables['time'].shape[0] #####asdasdasdasdasdasd
     nf.variables['time'][indx] = time
     nf.variables['U'][indx,:,:,:-1] = np.transpose(os.U[iStart:iEnd-1,jStart:jEnd,0:kEnd], (2, 1, 0))
     nf.variables['V'][indx,:,:-1,:] = np.transpose(os.V[iStart:iEnd,jStart:jEnd-1,0:kEnd], (2, 1, 0))

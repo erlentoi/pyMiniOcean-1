@@ -2,9 +2,10 @@ function [x_0] = createColVectorFromInput(filename)
 %Reading States
 U=ncread(filename,'U');
 
-[imax,jmax,kmax]=size(U);
+[imax,jmax,kmax,tseries,runs]=size(U);
 
-
+%%
+%states
 V=ncread(filename,'V');
 W=ncread(filename,'W');
 T=ncread(filename,'T');
@@ -12,24 +13,27 @@ S=ncread(filename,'S');
 E=ncread(filename,'E');
 
 
-U=U(1:imax-1,:,:);   % 
+U=U(1:imax-1,:,:);   %%%%%%%TIDSPUNKT? RUNS? Hva er input og output? initalverdier?????
 V=V(:,1:jmax-1,:);
-%U(:,:,1)
-%V(:,:,1)
 
-%%%boundary values
+%%
+%wind
 windU=ncread(filename,'windU');
 windV=ncread(filename,'windV');
 windU=windU(1:imax-1,:);
 windV=windV(:,1:jmax-1);
+%%
+%boundary values
+U_b=ncread(filename,'U_b');
+V_b=ncread(filename,'V_b');
+E_b=ncread(filename,'E_b');
 
-windU
-windV
-%x_0=zeros(imax*jmax*kmax,1);
 
+%%
+%Shaping into column vectors
 
-U_0=reshape(U,[(imax-1)*jmax*kmax,1]); %%%%%boundary values???????
-V_0=reshape(V,[imax*(jmax-1)*kmax,1]);   %%%%%boundary values???????
+U_0=reshape(U,[(imax-1)*jmax*kmax,1]); 
+V_0=reshape(V,[imax*(jmax-1)*kmax,1]);
 %W_0=rehsape(W,[imax*jmax*kmax,1]);
 T_0=reshape(T,[imax*jmax*kmax,1]);
 S_0=reshape(S,[imax*jmax*kmax,1]);
@@ -37,6 +41,8 @@ E_0=reshape(E,[imax*jmax,1]);
 
 windU_0=reshape(windU,[(imax-1)*jmax,1]);
 windV_0=reshape(windV,[imax*(jmax-1),1]);
+
+U_b_0= reshape(
 
 
 
