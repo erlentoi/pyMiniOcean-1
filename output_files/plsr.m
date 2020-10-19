@@ -1,30 +1,45 @@
-input_file='real_sub_area';
-%output_file=
+%file_0='init_000.nc';
+%file_1='init_001.nc';
+%file_2='init_002.nc';
+%file_3='init_003.nc';
+%file_4='init_004.nc';
+%file_5='init_005.nc';
 
-x_0=createColVectorFromInput('input_real_sub_area.nc');
 
-%Y=createColVectorFromOutput('output_real_sub_area.nc');
 
+file_0='init_000.nc'; %Antar vi alltid har minst 1 fil
+fileVector = [file_0];
+file_indx = 0;
+
+
+
+%Lagrer alle filnavn i mappen i en vektor
+while isfile("init_" + num2str(file_indx+1,'%03.f') + ".nc")
+    file_indx = file_indx + 1;
+    fileVector = [fileVector, "init_" + num2str(file_indx,'%03.f') + ".nc"];
+end
+
+
+nRuns = length(ncread("init_000.nc",'run')); %alle filer har samme antall runs
+
+NINPUT = 247; %number of input variables
+NOUTPUT = 162; %number of output variables
+
+X = zeros(nRuns, NINPUT);
+Y = zeros(nRuns, NOUTPUT);
+
+
+
+for run = 1 : nRuns
+    for file = fileVector
+        x = createInputColVector(file,run);
+        y = createOutputColVector(file,19,run); %%%specify time step here
+        X(run,:) = x;
+        Y(run,:) = y;
+    end
+end
+
+[XL, YL] = plsregress(X,Y,2);
 
 %skalering av data . hver varaibel må sentreres rundt 0 kanskje for å være
 %sammenlignbare. gjsnitt og std avvik av hver var, deretter sentrere. 
-
-%legge til time og run dimensjoner (time henter vi variablene i de
-%tidspunktene)..
-
-%KAN AVGRENSE DATA TIL et visst antall lag, påse at det er dypt nok.
-
-%må få inn DEPTH, definere kmax, fokusere på øvre del av vannsøyle ned til
-%cutooff passe på å velge områder som ikke er grunnere enn det.
-
-%kmm settes opp ved z inneholder indexen til nederste laget som er
-%reperesntert som angir antall lag imax x jmax.sjekke område ved å sjekke
-%kmm, hvis ikke dypt nok, gå videre. Kan bruke en uniform random.
-%numpy.random.uniform.
-
-%kanskje bygge om main: flere proesser kjører hele området og velger
-%tilefeldig et subområde. koordinerering: passe på at de ikke skriver
-%samtidig eller at alle proesser skriver til egen fil, og sette dem sammen
-%etterpå(enkelt). eller bare sette sammen i matlab. angi rank i filnavnet:
-%'init_[rank].nc'. n.zfill padder på 0'er, hvis dette, trenger ikke bruke
-%mpi, hell
