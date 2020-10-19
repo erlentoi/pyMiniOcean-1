@@ -94,7 +94,6 @@ def initInputFile(filename,iStart, iEnd, jStart, jEnd, kEnd, depth, layerDepths,
     nf.close()
 
 def saveInputFile(filename, iStart, iEnd, jStart, jEnd, kEnd, os, time, tEnd):
-    ""
     nf = Dataset(filename, "a", format="NETCDF3_CLASSIC")
 
     time_indx = int((time/tEnd) * nf.variables['time'].shape[0])
@@ -109,6 +108,8 @@ def saveInputFile(filename, iStart, iEnd, jStart, jEnd, kEnd, os, time, tEnd):
         run_indx = nf.variables['run'].shape[0]
         nf.variables['run'][int(run_indx)] = int(run_indx) ###Setter NESTE indeks
         print(nf.variables['run'].shape[0], "shape etter")
+
+
 
     nf.variables['U'][run_indx, time_indx, :, :, :-1] = np.transpose(os.U[iStart:iEnd - 1, jStart:jEnd, 0:kEnd], (2, 1, 0))
     nf.variables['V'][run_indx, time_indx, :, :-1, :] = np.transpose(os.V[iStart:iEnd, jStart:jEnd - 1, 0:kEnd], (2, 1, 0))
