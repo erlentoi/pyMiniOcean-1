@@ -65,7 +65,6 @@ def initInputFile(filename,iStart, iEnd, jStart, jEnd, kEnd, depth, layerDepths,
     t_dim = nf.createDimension('time', 1 + int(n_time_samples)) #initaltilstandene + tilstandene for alle tidssamplinger
     run_dim = nf.createDimension('run', None)
 
-
     x_bound_dim = nf.createDimension("xc_b", 2*(jEnd-jStart))
     y_bound_dim = nf.createDimension("yc_b", 2*(iEnd-iStart))
     e_bound_dim = nf.createDimension("ec_b", 2*(iEnd-iStart) + 2*(jEnd-jStart))
@@ -85,8 +84,8 @@ def initInputFile(filename,iStart, iEnd, jStart, jEnd, kEnd, depth, layerDepths,
     nf.createVariable("windU", "f8", ('run', 'time', 'yc', 'xc'))
     nf.createVariable("windV", "f8", ('run', 'time', 'yc', 'xc'))
 
-    nf.createVariable("U_b", "f8", ('run', 'time', 'zc', 'yc_b'))
-    nf.createVariable("V_b", "f8", ('run', 'time', 'zc', 'xc_b'))
+    nf.createVariable("U_b", "f8", ('run', 'time', 'zc', 'xc_b'))##############################################
+    nf.createVariable("V_b", "f8", ('run', 'time', 'zc', 'yc_b'))##############################################
     nf.createVariable("E_b", "f8", ('run', 'time', 'ec_b'))
     nf.variables['zc'][:] = layerDepths[0:kEnd]
     nf.variables['depth'][:] = np.transpose(depth[iStart:iEnd, jStart:jEnd])

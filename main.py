@@ -131,9 +131,9 @@ doMpi= False
 
 #The size of our "sub-sub" area (MUST BE SMALLER OR SAME SIZE AS AREA SET IN miniOceanConfig.txt)
 
-imax_input = 6
+imax_input = 7
 jmax_input = 5
-kmax_input = 1
+kmax_input = 2
 
 #Randomly choose our "sub-sub" area within our subarea set in config file
 iStart, iEnd, jStart, jEnd = decideSubArea.decideSubArea(os, os.imax, os.jmax, imax_input, jmax_input, kmax_input)
