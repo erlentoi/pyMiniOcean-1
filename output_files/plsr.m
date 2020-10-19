@@ -22,16 +22,16 @@ end
 
 nRuns = length(ncread("init_000.nc",'run')); %alle filer har samme antall runs
 
-NINPUT = 247; %number of input variables
-NOUTPUT = 162; %number of output variables
+NINPUT = 247; %number of input variables per run
+NOUTPUT = 162; %number of output variables per run
 
 X = zeros(nRuns, NINPUT);
 Y = zeros(nRuns, NOUTPUT);
 
 
 
-for run = 1 : nRuns
-    for file = fileVector
+for file = fileVector
+    for run = 1 : nRuns
         x = createInputColVector(file,run);
         y = createOutputColVector(file,19,run); %%%specify time step here
         X(run,:) = x;
