@@ -51,15 +51,23 @@ E_t=reshape(E,[imax*jmax,1]);
 
 %%
 %centering variables
-U_t=(U_t-mean(U_t))/std(U_t);
-V_t=(V_t-mean(V_t))/std(V_t);
-T_t=(T_t-mean(T_t))/std(T_t);
-S_t=(S_t-mean(S_t))/std(S_t);
-E_t=(E_t-mean(E_t))/std(E_t);
+%U_t=(U_t-mean(U_t))/std(U_t);
+%V_t=(V_t-mean(V_t))/std(V_t);%%%%%%%%%%%%%%%%%%%%%%%%%
+%T_t=(T_t-mean(T_t))/std(T_t);
+%S_t=(S_t-mean(S_t))/std(S_t);
+%E_t=(E_t-mean(E_t))/std(E_t);
 
+
+
+%skalering av data . hver varaibel må sentreres rundt 0 kanskje for å være
+%sammenlignbare. gjsnitt og std avvik av hver var, deretter sentrere. 
 
 %%
 
 
-Y=vertcat(U_t,V_t,T_t,S_t,E_t);
+Y_0=vertcat(U_t,V_t,T_t,S_t,E_t);
+
+Y=(Y_0-mean(Y_0))/std(Y_0); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%?
+
+
 end

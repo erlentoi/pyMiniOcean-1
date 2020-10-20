@@ -39,7 +39,6 @@ for file = fileVector
     end
 end
 
-[XL, YL] = plsregress(X,Y,2);
 
-%skalering av data . hver varaibel må sentreres rundt 0 kanskje for å være
-%sammenlignbare. gjsnitt og std avvik av hver var, deretter sentrere. 
+[XL, YL] = plsregress(X,Y,3);
+

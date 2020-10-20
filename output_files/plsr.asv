@@ -22,8 +22,8 @@ end
 
 nRuns = length(ncread("init_000.nc",'run')); %alle filer har samme antall runs
 
-NINPUT = 247; %number of input variables
-NOUTPUT = 162; %number of output variables
+NINPUT = 247; %number of input variables per run
+NOUTPUT = 162; %number of output variables per run
 
 X = zeros(nRuns, NINPUT);
 Y = zeros(nRuns, NOUTPUT);
@@ -31,7 +31,7 @@ Y = zeros(nRuns, NOUTPUT);
 
 
 for file = fileVector
-    for run = 1: nRuns
+    for run = 1 : nRuns
         x = createInputColVector(file,run);
         y = createOutputColVector(file,19,run); %%%specify time step here
         X(run,:) = x;
@@ -39,7 +39,8 @@ for file = fileVector
     end
 end
 
-[XL, YL] = plsregress(X,Y,2);
+ncomp=3%% må være <=
 
-%skalering av data . hver varaibel må sentreres rundt 0 kanskje for å være
-%sammenlignbare. gjsnitt og std avvik av hver var, deretter sentrere. 
+
+[XL, YL] = plsregress(X,Y,3);
+

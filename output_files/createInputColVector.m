@@ -86,20 +86,25 @@ E_b_0 = reshape(E_b,[ec_b,1]);
 
 %%
 %centering variables
-U_0=(U_0-mean(U_0))/std(U_0);
-V_0=(V_0-mean(V_0))/std(V_0);
-T_0=(T_0-mean(T_0))/std(T_0);
-S_0=(S_0-mean(S_0))/std(S_0);
-E_0=(E_0-mean(E_0))/std(E_0);
-windU_0=(windU_0-mean(windU_0))/std(windU_0);
-windV_0=(windV_0-mean(windV_0))/std(windV_0);
-U_b_0=(U_b_0-mean(U_b_0))/std(U_b_0);
-V_b_0=(V_b_0-mean(V_b_0))/std(V_b_0);
-E_b_0=(E_b_0-mean(E_b_0))/std(E_b_0);
+%U_0=(U_0-mean(U_0))/std(U_0);
+%V_0=(V_0-mean(V_0))/std(V_0);
+%T_0=(T_0-mean(T_0))/std(T_0);
+%S_0=(S_0-mean(S_0))/std(S_0);
+%E_0=(E_0-mean(E_0))/std(E_0);
+%windU_0=(windU_0-mean(windU_0))/std(windU_0);
+%windV_0=(windV_0-mean(windV_0))/std(windV_0);
+%U_b_0=(U_b_0-mean(U_b_0))/std(U_b_0);
+%V_b_0=(V_b_0-mean(V_b_0))/std(V_b_0);
+%E_b_0=(E_b_0-mean(E_b_0))/std(E_b_0);
 
+
+%skalering av data . hver varaibel må sentreres rundt 0 kanskje for å være
+%sammenlignbare. gjsnitt og std avvik av hver var, deretter sentrere. 
 
 %%
 
-X=vertcat(U_0,V_0,T_0,S_0,E_0,windU_0,windV_0,U_b_0,V_b_0,E_b_0);
+
+X_0=vertcat(U_0,V_0,T_0,S_0,E_0,windU_0,windV_0,U_b_0,V_b_0,E_b_0);
+X=(X_0-mean(X_0))/std(X_0);
 
 end
