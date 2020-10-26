@@ -84,8 +84,8 @@ def initInputFile(filename,iStart, iEnd, jStart, jEnd, kEnd, depth, layerDepths,
     nf.createVariable("windU", "f8", ('run', 'time', 'yc', 'xc'))
     nf.createVariable("windV", "f8", ('run', 'time', 'yc', 'xc'))
 
-    nf.createVariable("U_b", "f8", ('run', 'time', 'zc', 'xc_b'))##############################################
-    nf.createVariable("V_b", "f8", ('run', 'time', 'zc', 'yc_b'))##############################################
+    nf.createVariable("U_b", "f8", ('run', 'time', 'zc', 'xc_b'))
+    nf.createVariable("V_b", "f8", ('run', 'time', 'zc', 'yc_b'))
     nf.createVariable("E_b", "f8", ('run', 'time', 'ec_b'))
     nf.variables['zc'][:] = layerDepths[0:kEnd]
     nf.variables['depth'][:] = np.transpose(depth[iStart:iEnd, jStart:jEnd])
@@ -103,16 +103,14 @@ def saveInputFile(filename, iStart, iEnd, jStart, jEnd, kEnd, os, time, tEnd):
     run_indx = nf.variables['run'].shape[0]-1
     if time == 0:
         print("Ny run")
-        print(nf.variables['run'].shape[0], "shape før")
         run_indx = nf.variables['run'].shape[0]
         nf.variables['run'][int(run_indx)] = int(run_indx) ###Setter NESTE indeks
-        print(nf.variables['run'].shape[0], "shape etter")
 
 
 
     nf.variables['U'][run_indx, time_indx, :, :, :-1] = np.transpose(os.U[iStart:iEnd - 1, jStart:jEnd, 0:kEnd], (2, 1, 0))
     nf.variables['V'][run_indx, time_indx, :, :-1, :] = np.transpose(os.V[iStart:iEnd, jStart:jEnd - 1, 0:kEnd], (2, 1, 0))
-    nf.variables['W'][run_indx, time_indx, ...] = np.transpose(os.W[iStart:iEnd, jStart:jEnd, 0:kEnd], (2, 1, 0))      # Fjernet tidindekseringen
+    nf.variables['W'][run_indx, time_indx, ...] = np.transpose(os.W[iStart:iEnd, jStart:jEnd, 0:kEnd], (2, 1, 0))
     nf.variables['T'][run_indx, time_indx, ...] = np.transpose(os.T[iStart:iEnd, jStart:jEnd, 0:kEnd], (2, 1, 0))
     nf.variables['S'][run_indx, time_indx, ...] = np.transpose(os.S[iStart:iEnd, jStart:jEnd, 0:kEnd], (2, 1, 0))
     nf.variables['E'][run_indx, time_indx, ...] = np.transpose(os.E[iStart:iEnd, jStart:jEnd])
@@ -159,9 +157,9 @@ def initSaveSubsetFile(filename, iStart, iEnd, jStart, jEnd, kEnd, depth, layerD
     #print(nf.variables)
     nf.close()
 
-def saveStateSubset(filename, iStart, iEnd, jStart, jEnd, kEnd, time, os): ###LAGRE OUTPUT, TA MED RUN!!!!!!!!!!
+def saveStateSubset(filename, iStart, iEnd, jStart, jEnd, kEnd, time, os):
     nf = Dataset(filename, "a", format="NETCDF3_CLASSIC")
-    indx = nf.variables['time'].shape[0] #####asdasdasdasdasdasd
+    indx = nf.variables['time'].shape[0]
     nf.variables['time'][indx] = time
     nf.variables['U'][indx,:,:,:-1] = np.transpose(os.U[iStart:iEnd-1,jStart:jEnd,0:kEnd], (2, 1, 0))
     nf.variables['V'][indx,:,:-1,:] = np.transpose(os.V[iStart:iEnd,jStart:jEnd-1,0:kEnd], (2, 1, 0))
@@ -208,7 +206,7 @@ def loadState(sp, file, sample):
 
     return os
 
-def loadSINMODState(sp, file, sample, subset=[]):
+def loadSINMODState(sp, file, sample, subset=[],subsubArea=[]):
     nf = Dataset(file, "r")
     tim = nf.variables['time']
     nSamples = tim.shape[0]
@@ -242,6 +240,38 @@ def loadSINMODState(sp, file, sample, subset=[]):
     os.S = np.transpose(nf.variables['salinity'][sample, :, subset[2]:subset[3], subset[0]:subset[1]], (2, 1, 0)).copy()
     os.U = np.transpose(nf.variables['u_velocity'][sample, :, subset[2]:subset[3], subset[0]:subset[1]-1], (2, 1, 0)).copy()
     os.V = np.transpose(nf.variables['v_velocity'][sample, :, subset[2]:subset[3]-1, subset[0]:subset[1]], (2, 1, 0)).copy()
+
+    #################################################################
+    avgStd = Dataset("C:/Users/Neio3/Desktop/Fordypningsprosjekt/pyMiniOcean/output_files/stateAvgStd.nc", "r")
+
+
+    E_avg= np.transpose(avgStd.variables['E_avg'][:, :]).copy() ###transpose?? copy???
+    E_std= np.transpose(avgStd.variables['E_std'][:, :]).copy()
+
+    T_avg= np.transpose(avgStd.variables['T_avg'][:, :, :]).copy()
+    T_std= np.transpose(avgStd.variables['T_std'][:, :, :]).copy()
+
+    S_avg = np.transpose(avgStd.variables['S_avg'][:, :, :]).copy()
+    S_std =np.transpose(avgStd.variables['S_std'][:, :, :]).copy()
+
+    U_avg = np.transpose(avgStd.variables['U_avg'][:, :, :]).copy()
+    U_std = np.transpose(avgStd.variables['U_std'][:, :, :]).copy()
+    V_avg = np.transpose(avgStd.variables['V_avg'][:, :, :]).copy()
+    V_std = np.transpose(avgStd.variables['V_std'][:, :, :]).copy()
+
+
+    for x in range(subsubArea[0], subsubArea[1]):
+        for y in range(subsubArea[2], subsubArea[3]):
+            os.E[x,y] += np.random.normal(E_avg[x-subsubArea[0], y-subsubArea[2]], E_std[x-subsubArea[0], y-subsubArea[2]], None)
+            for z in range(0, subsubArea[4]):
+                #os.T[x, y, z] += np.random.normal(T_avg[x, y, z], T_std[x, y, z], None)
+                #os.S[x, y, z] += np.random.normal(S_avg[x, y, z], S_std[x, y, z], None)    #####transpose?????????? indexing??????
+                #os.U[x, y, z] += np.random.normal(U_avg[x, y, z], U_std[x, y, z], None)
+                # os.V[x, y, z] += np.random.normal(V_avg[x, y, z], V_std[x, y, z], None)
+    avgStd.close()
+    ##################################################
+
+
     #print(nf.variables['u_velocity'].shape)
     #print(os.U.shape)
     #print(os.V.shape)

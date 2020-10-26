@@ -1,10 +1,3 @@
-%file_0='init_000.nc';
-%file_1='init_001.nc';
-%file_2='init_002.nc';
-%file_3='init_003.nc';
-%file_4='init_004.nc';
-%file_5='init_005.nc';
-
 
 
 file_0='init_000.nc'; %Antar vi alltid har minst 1 fil
@@ -21,24 +14,53 @@ end
 
 
 nRuns = length(ncread("init_000.nc",'run')); %alle filer har samme antall runs
-
+nFiles = length(fileVector);
 NINPUT = 247; %number of input variables per run
 NOUTPUT = 162; %number of output variables per run
 
-X = zeros(nRuns, NINPUT);
-Y = zeros(nRuns, NOUTPUT);
+X = zeros(nRuns*nFiles, NINPUT);
+Y = zeros(nRuns*nFiles, NOUTPUT);
 
-
+f_indx = 0;
 
 for file = fileVector
     for run = 1 : nRuns
         x = createInputColVector(file,run);
         y = createOutputColVector(file,19,run); %%%specify time step here
-        X(run,:) = x;
-        Y(run,:) = y;
+        X(run + f_indx,:) = x;
+        Y(run + f_indx,:) = y;
+        if run == nRuns
+            f_indx = run+f_indx;
+        end
+    
     end
 end
 
+% MÅ SENTERES NÅR ALLE VARIABLER HAR BLITT FUNNET FOR ALLE RUNS.
+% means og std!!!!!! ta vare på slik at jeg kan skalere tilbake og bruke
+% når modellen skal brukes!!
+ncomp = 3;
 
-[XL, YL] = plsregress(X,Y,3);
+
+[obs, vars] = size(X);
+
+[obs, outs] = size(Y);
+
+X_centered = zeros(nRuns*file_indx, NINPUT);
+Y_centered = zeros(nRuns*file_indx, NOUTPUT);
+ 
+for col = 1: vars
+       X_centered(:,col)= (X(:,col) - mean(X(:,col)))/std(X(:,col));
+end
+
+for col = 1: outs
+    Y_centered(:,col) = (Y(:,col)- mean(Y(:,col)))/std(Y(:,col));
+end
+
+
+
+
+
+
+%[XL, YL] = plsregress(X,Y,ncomp);
 

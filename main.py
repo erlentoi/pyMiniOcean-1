@@ -131,12 +131,14 @@ doMpi= False
 
 #The size of our "sub-sub" area (MUST BE SMALLER OR SAME SIZE AS AREA SET IN miniOceanConfig.txt)
 
-imax_input = 5
-jmax_input = 4
-kmax_input = 2
+imax_input = 10
+jmax_input = 10
+kmax_input = 3
 
 #Randomly choose our "sub-sub" area within our subarea set in config file
-iStart, iEnd, jStart, jEnd = decideSubArea.decideSubArea(os, os.imax, os.jmax, imax_input, jmax_input, kmax_input)
+#iStart, iEnd, jStart, jEnd = decideSubArea.decideSubArea(os, os.imax, os.jmax, imax_input, jmax_input, kmax_input)
+
+iStart, iEnd, jStart, jEnd, kmax_input = scenario.subsubArea
 
 #################################################################################################
 
@@ -242,11 +244,11 @@ for sample in range(0,nSamples):
             # Initialize file if this is first save:
         if firstSave:
             firstSave = False
-            netcdfStorage.initSaveFile(sp.saveFile, osAll.imax, osAll.jmax, osAll.kmax, osAll.depth, osAll.layerDepths)
+            #netcdfStorage.initSaveFile(sp.saveFile, osAll.imax, osAll.jmax, osAll.kmax, osAll.depth, osAll.layerDepths)
             #netcdfStorage.initSaveSubsetFile(sp.saveSubsetFile, 10, 20, 10, 18, 5, osAll.depth, osAll.layerDepths)
 
         # Save state:
-        netcdfStorage.saveState(sp.saveFile, t, osAll)
+        #netcdfStorage.saveState(sp.saveFile, t, osAll)
         netcdfStorage.saveInputFile(inputFileName, iStart, iEnd, jStart, jEnd, kmax_input, os, t, sp.tEnd)
         #netcdfStorage.saveStateSubset(sp.saveSubsetFile, 10, 20, 10, 18, 5, 0, osAll)
 

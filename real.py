@@ -25,6 +25,8 @@ class Real(Scenario):
         self.initSample = sp.config['realInitSample']
         self.sinmodTile = sp.config['realTile']
 
+        self.subsubArea = sp.config['subsubArea']
+
         sp.dt = 1200
         sp.nsub = 25
         sp.dx = 20000
@@ -36,7 +38,7 @@ class Real(Scenario):
 
         #self.os = netcdfStorage.loadState(sp, 'data/real_init.nc', 0)
         #self.os = netcdfStorage.loadSINMODState(sp, 'C:/SINMOD_operative/gin/gin_PhysStates.nc', 0, [25, 85, 25, 80])
-        self.os, self.initTime = netcdfStorage.loadSINMODState(sp, self.sinmodInitFile, self.initSample, self.sinmodTile)
+        self.os, self.initTime = netcdfStorage.loadSINMODState(sp, self.sinmodInitFile, self.initSample, self.sinmodTile, self.subsubArea)
         print("Initializing at time: "+str(self.initTime))
         #self.os = OceanState(300, 235, 5)
         #self.os.dz[:] = np.array([10, 20, 20, 50, 100, 200, 300, 300, 500, 500, 500, 500])
