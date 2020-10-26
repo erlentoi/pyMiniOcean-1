@@ -134,14 +134,14 @@ nccreate(filename,'U_std','Datatype','double','Dimensions',{'yc','U_xc','zc'})
 nccreate(filename,'V_avg','Datatype','double','Dimensions',{'V_yc','xc','zc'})
 nccreate(filename,'V_std','Datatype','double','Dimensions',{'V_yc','xc','zc'})
 
-nccreate(filename,'T_avg','Datatype','double','Dimensions',{'xc','yc','zc'})
-nccreate(filename,'T_std','Datatype','double','Dimensions',{'xc','yc','zc'})
+nccreate(filename,'T_avg','Datatype','double','Dimensions',{'yc','xc','zc'})
+nccreate(filename,'T_std','Datatype','double','Dimensions',{'yc','xc','zc'})
 
-nccreate(filename,'S_avg','Datatype','double','Dimensions',{'xc','yc','zc'})
-nccreate(filename,'S_std','Datatype','double','Dimensions',{'xc','yc','zc'})
+nccreate(filename,'S_avg','Datatype','double','Dimensions',{'yc','xc','zc'})
+nccreate(filename,'S_std','Datatype','double','Dimensions',{'yc','xc','zc'})
 
-nccreate(filename,'E_avg','Datatype','double','Dimensions',{'xc','yc'})
-nccreate(filename,'E_std','Datatype','double','Dimensions',{'xc','yc'})
+nccreate(filename,'E_avg','Datatype','double','Dimensions',{'yc','xc'})
+nccreate(filename,'E_std','Datatype','double','Dimensions',{'yc','xc'})
 
 
 nccreate(filename,'windU_avg','Datatype','double','Dimensions',{'yc','U_xc'})
@@ -187,15 +187,15 @@ V_b_std = std(transpose(V_b));
 E_b_std = std(transpose(E_b));
 %%
 %mean
-ncwrite('stateAvgStd.nc','U_avg',reshape(U_avg,[xc,yc-1,zc]))
-ncwrite('stateAvgStd.nc','V_avg',reshape(V_avg,[xc-1,yc,zc]))
+ncwrite('stateAvgStd.nc','U_avg',reshape(U_avg,[yc,xc-1,zc]))
+ncwrite('stateAvgStd.nc','V_avg',reshape(V_avg,[yc-1,xc,zc]))
 
-ncwrite('stateAvgStd.nc','T_avg',reshape(T_avg,[xc,yc,zc]))
-ncwrite('stateAvgStd.nc','S_avg',reshape(S_avg,[xc,yc,zc]))
-ncwrite('stateAvgStd.nc','E_avg',reshape(E_avg,[xc,yc]))
+ncwrite('stateAvgStd.nc','T_avg',reshape(T_avg,[yc,xc,zc]))
+ncwrite('stateAvgStd.nc','S_avg',reshape(S_avg,[yc,xc,zc]))
+ncwrite('stateAvgStd.nc','E_avg',reshape(E_avg,[yc,xc]))
 
-ncwrite('stateAvgStd.nc','windU_avg',reshape(windU_avg,[xc,yc-1]))
-ncwrite('stateAvgStd.nc','windV_avg',reshape(windV_avg,[xc-1,yc]))
+ncwrite('stateAvgStd.nc','windU_avg',reshape(windU_avg,[yc,xc-1]))
+ncwrite('stateAvgStd.nc','windV_avg',reshape(windV_avg,[yc-1,xc]))
 
 ncwrite('stateAvgStd.nc','U_b_avg',reshape(U_b_avg,[xc_b,zc]))
 ncwrite('stateAvgStd.nc','V_b_avg',reshape(V_b_avg,[yc_b,zc]))
@@ -204,15 +204,15 @@ ncwrite('stateAvgStd.nc','E_b_avg',E_b_avg)
 
 %%
 %std
-ncwrite('stateAvgStd.nc','U_std',reshape(U_std,[xc-1,yc-1,zc]))
-ncwrite('stateAvgStd.nc','V_std',reshape(V_std,[xc,yc-1,zc]))
+ncwrite('stateAvgStd.nc','U_std',reshape(U_std,[yc,xc-1,zc]))
+ncwrite('stateAvgStd.nc','V_std',reshape(V_std,[yc-,xc,zc]))
 
 ncwrite('stateAvgStd.nc','T_std',reshape(T_std,[xc,yc,zc]))
 ncwrite('stateAvgStd.nc','S_std',reshape(S_std,[xc,yc,zc]))
 ncwrite('stateAvgStd.nc','E_std',reshape(E_std,[xc,yc]))
 
-ncwrite('stateAvgStd.nc','windU_std',reshape(windU_std,[xc-1,yc]))
-ncwrite('stateAvgStd.nc','windV_std',reshape(windV_std,[xc,yc-1]))
+ncwrite('stateAvgStd.nc','windU_std',reshape(windU_std,[xc,yc-1]))
+ncwrite('stateAvgStd.nc','windV_std',reshape(windV_std,[xc-1,yc]))
 
 ncwrite('stateAvgStd.nc','U_b_std',reshape(U_b_std,[xc_b,zc]))
 ncwrite('stateAvgStd.nc','V_b_std',reshape(V_b_std,[yc_b,zc]))

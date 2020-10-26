@@ -235,7 +235,7 @@ def loadSINMODState(sp, file, sample, subset=[],subsubArea=[]):
         dz[i] = layerDepths[i] - layerDepths[i - 1]
     os.dz = dz
 
-    os.E = np.transpose(nf.variables['elevation'][sample,subset[2]:subset[3], subset[0]:subset[1]], (1, 0)).copy()
+    os.E = np.transpose(nf.variables['elevation'][sample, subset[2]:subset[3], subset[0]:subset[1]], (1, 0)).copy()
     os.T = np.transpose(nf.variables['temperature'][sample, :, subset[2]:subset[3], subset[0]:subset[1]], (2, 1, 0)).copy()
     os.S = np.transpose(nf.variables['salinity'][sample, :, subset[2]:subset[3], subset[0]:subset[1]], (2, 1, 0)).copy()
     os.U = np.transpose(nf.variables['u_velocity'][sample, :, subset[2]:subset[3], subset[0]:subset[1]-1], (2, 1, 0)).copy()
@@ -244,30 +244,43 @@ def loadSINMODState(sp, file, sample, subset=[],subsubArea=[]):
     #################################################################
     avgStd = Dataset("C:/Users/Neio3/Desktop/Fordypningsprosjekt/pyMiniOcean/output_files/stateAvgStd.nc", "r")
 
-
-    E_avg= np.transpose(avgStd.variables['E_avg'][:, :]).copy() ###transpose?? copy???
+    #E_avg= np.transpose(avgStd.variables['E_avg'][:, :]).copy() ###transpose?? copy???
     E_std= np.transpose(avgStd.variables['E_std'][:, :]).copy()
 
-    T_avg= np.transpose(avgStd.variables['T_avg'][:, :, :]).copy()
+    #T_avg= np.transpose(avgStd.variables['T_avg'][:, :, :]).copy()
     T_std= np.transpose(avgStd.variables['T_std'][:, :, :]).copy()
 
-    S_avg = np.transpose(avgStd.variables['S_avg'][:, :, :]).copy()
+    #S_avg = np.transpose(avgStd.variables['S_avg'][:, :, :]).copy()
     S_std =np.transpose(avgStd.variables['S_std'][:, :, :]).copy()
 
-    U_avg = np.transpose(avgStd.variables['U_avg'][:, :, :]).copy()
+    #U_avg = np.transpose(avgStd.variables['U_avg'][:, :, :]).copy()
     U_std = np.transpose(avgStd.variables['U_std'][:, :, :]).copy()
-    V_avg = np.transpose(avgStd.variables['V_avg'][:, :, :]).copy()
+    #V_avg = np.transpose(avgStd.variables['V_avg'][:, :, :]).copy()
     V_std = np.transpose(avgStd.variables['V_std'][:, :, :]).copy()
 
 
     for x in range(subsubArea[0], subsubArea[1]):
         for y in range(subsubArea[2], subsubArea[3]):
-            os.E[x,y] += np.random.normal(E_avg[x-subsubArea[0], y-subsubArea[2]], E_std[x-subsubArea[0], y-subsubArea[2]], None)
+
+           # print(os.E[x, y])
+           # print("+")
+            #print(E_std[y-subsubArea[2],x-subsubArea[0]])
+           # print("\n")
+
+            os.E[x, y] += np.random.normal(0, E_std[y-subsubArea[2],x-subsubArea[0]] * 0.05) ############## std til pertubasjon = 5% av std av variabelen
             for z in range(0, subsubArea[4]):
-                #os.T[x, y, z] += np.random.normal(T_avg[x, y, z], T_std[x, y, z], None)
-                #os.S[x, y, z] += np.random.normal(S_avg[x, y, z], S_std[x, y, z], None)    #####transpose?????????? indexing??????
-                #os.U[x, y, z] += np.random.normal(U_avg[x, y, z], U_std[x, y, z], None)
-                # os.V[x, y, z] += np.random.normal(V_avg[x, y, z], V_std[x, y, z], None)
+
+                os.T[x, y, z] += np.random.normal(0, T_std[y - subsubArea[2], x - subsubArea[0], z]* 0.05)
+                os.S[x, y, z] += np.random.normal(0, S_std[y - subsubArea[2], x - subsubArea[0], z]* 0.05)    #####transpose?????????? indexing??????
+
+                print(x - subsubArea[0])
+                print(y - subsubArea[2])
+                print("")
+                if x - subsubArea[0] < x-subsubArea[1] - 1:
+                    os.U[x, y, z] += np.random.normal(0, U_std[y - subsubArea[2], x - subsubArea[0], z]* 0.05)
+
+                if y - subsubArea[2] < y-subsubArea[3]-1:
+                    os.V[x, y, z] += np.random.normal(0, V_std[y - subsubArea[2], x - subsubArea[0], z]* 0.05)
     avgStd.close()
     ##################################################
 

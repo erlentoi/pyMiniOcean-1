@@ -1,0 +1,14 @@
+
+E_000=ncread('init_000_test.nc','E');
+E_000= E_000(:,:,:,1);
+
+E_000_pert=ncread('init_000.nc','E');
+
+E_std_read = ncread('stateAvgStd.nc','E_std');
+
+
+
+
+
+
+

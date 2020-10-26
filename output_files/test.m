@@ -1,13 +1,16 @@
 
-U_000=ncread('init_000.nc','U');
-U_000= U_000(1:end-1,:,:,:);
+T_000=ncread('init_000_test.nc','E');
+T_000= T_000(:,:,1,1);
+
+%E_000_pert=ncread('init_000.nc','E');
+
+%E_000_pert= E_000_pert(:,:,1);
+
+T_std_read = ncread('stateAvgStd.nc','T_std');
 
 
-U_000_1_1=U_000(1,1,:,:);
 
-U_000_1_1 = reshape(U_000_1_1, [38,1]);
 
-m= mean(U_000_1_1);
 
-U_avg_read=ncread('stateAvgStd.nc', 'U_avg');
+
 
