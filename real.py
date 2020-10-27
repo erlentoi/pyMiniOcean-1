@@ -78,7 +78,7 @@ class Real(Scenario):
         print(tIndex)
         if self.atmoSample==-1 or tIndex>self.atmoSample:
             self.atmoSample = tIndex
-            WU, WV = netcdfStorage.loadSINMODAtmo(self.sinmodAtmoFile, self.atmoSample, self.sinmodTile)
+            WU, WV = netcdfStorage.loadSINMODAtmo(self.sinmodAtmoFile, self.atmoSample, self.sinmodTile, self.subsubArea)
             return WU, WV
         else:
             return None, None

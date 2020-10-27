@@ -324,7 +324,7 @@ def getSINMODAtmoTimes(file):
 
 
 # Read a given subset area and a given sample number of wind information from a SINMOD atmo file.
-def loadSINMODAtmo(file, sample, subset=[]):
+def loadSINMODAtmo(file, sample, subset=[],subsubArea = []):
     nf = Dataset(file, "r")
     tim = nf.variables['time']
     dims = nf.variables['x_wind'].shape
@@ -334,6 +334,23 @@ def loadSINMODAtmo(file, sample, subset=[]):
         subset = [0, imax, 0, jmax]
     WU = np.transpose(nf.variables['x_wind'][sample,subset[2]:subset[3], subset[0]:subset[1]], (1, 0)).copy()
     WV = np.transpose(nf.variables['y_wind'][sample, subset[2]:subset[3], subset[0]:subset[1]], (1, 0)).copy()
+
+    #############################################################################################################
+    avgStd = Dataset("C:/Users/Neio3/Desktop/Fordypningsprosjekt/pyMiniOcean/output_files/stateAvgStd.nc", "r")
+
+    windU_std = np.transpose(avgStd.variables['windU_std'][:, :]).copy()
+    windV_std = np.transpose(avgStd.variables['windV_std'][:, :]).copy()
+
+    for x in range(subsubArea[0], subsubArea[1]):
+        for y in range(subsubArea[2], subsubArea[3]):
+            if x - subsubArea[0] < x - subsubArea[1] - 1:
+                WU[x, y] += np.random.normal(0, windU_std[y - subsubArea[2], x - subsubArea[0]] * 0.05)
+
+            if y - subsubArea[2] < y - subsubArea[3] - 1:
+                WV[x, y] += np.random.normal(0, windV_std[y - subsubArea[2], x - subsubArea[0]] * 0.05)
+
+
+    ##############################################################################################################
 
     return WU, WV
 
