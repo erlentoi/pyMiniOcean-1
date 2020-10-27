@@ -244,18 +244,11 @@ def loadSINMODState(sp, file, sample, subset=[],subsubArea=[]):
     #################################################################
     avgStd = Dataset("C:/Users/Neio3/Desktop/Fordypningsprosjekt/pyMiniOcean/output_files/stateAvgStd.nc", "r")
 
-    #E_avg= np.transpose(avgStd.variables['E_avg'][:, :]).copy() ###transpose?? copy???
     E_std= np.transpose(avgStd.variables['E_std'][:, :]).copy()
-
-    #T_avg= np.transpose(avgStd.variables['T_avg'][:, :, :]).copy()
     T_std= np.transpose(avgStd.variables['T_std'][:, :, :]).copy()
-
-    #S_avg = np.transpose(avgStd.variables['S_avg'][:, :, :]).copy()
     S_std =np.transpose(avgStd.variables['S_std'][:, :, :]).copy()
 
-    #U_avg = np.transpose(avgStd.variables['U_avg'][:, :, :]).copy()
     U_std = np.transpose(avgStd.variables['U_std'][:, :, :]).copy()
-    #V_avg = np.transpose(avgStd.variables['V_avg'][:, :, :]).copy()
     V_std = np.transpose(avgStd.variables['V_std'][:, :, :]).copy()
 
 
@@ -273,14 +266,19 @@ def loadSINMODState(sp, file, sample, subset=[],subsubArea=[]):
                 os.T[x, y, z] += np.random.normal(0, T_std[y - subsubArea[2], x - subsubArea[0], z]* 0.05)
                 os.S[x, y, z] += np.random.normal(0, S_std[y - subsubArea[2], x - subsubArea[0], z]* 0.05)    #####transpose?????????? indexing??????
 
-                print(x - subsubArea[0])
-                print(y - subsubArea[2])
-                print("")
+                #print(x - subsubArea[0])
+                #print(y - subsubArea[2])
+                #print("")
                 if x - subsubArea[0] < x-subsubArea[1] - 1:
                     os.U[x, y, z] += np.random.normal(0, U_std[y - subsubArea[2], x - subsubArea[0], z]* 0.05)
 
                 if y - subsubArea[2] < y-subsubArea[3]-1:
                     os.V[x, y, z] += np.random.normal(0, V_std[y - subsubArea[2], x - subsubArea[0], z]* 0.05)
+
+
+
+
+
     avgStd.close()
     ##################################################
 
