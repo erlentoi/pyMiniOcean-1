@@ -71,11 +71,11 @@ windV_std = reshape(permute(ncread('stateAvgStd.nc','windV_std'),[2 1]), [prod(w
 U_b_avg = reshape(ncread('stateAvgStd.nc','U_b_avg'),[prod(U_b_size),1]);
 U_b_std = reshape(ncread('stateAvgStd.nc','U_b_std'),[prod(U_b_size),1]);
 
-V_b_avg = reshape( ncread('stateAvgStd.nc','V_b_avg'),[prod(V_b_size),1]);
-V_b_std = reshape(ncread('stateAvgStd.nc','V_b_std'),[prod(V_b_size),1]);
+V_b_avg =reshape( ncread('stateAvgStd.nc','V_b_avg'),[prod(V_b_size),1]);
+V_b_std = reshape(ncread('stateAvgStd.nc','V_b_avg'),[prod(V_b_size),1]);
 
 E_b_avg = ncread('stateAvgStd.nc','E_b_avg');
-E_b_std = ncread('stateAvgStd.nc','E_b_std');
+E_b_std = ncread('stateAvgStd.nc','E_b_avg');
 
 
 
@@ -104,8 +104,7 @@ if fileVector == file_0  %done because else matlab treats the vector like a stri
             
             y = createOutputColVector(file,19,run); %%%specify time step here
 
-            X(run + f_indx,:) = [U_cen; V_cen; T_cen; S_cen; E_cen;...
-                windU_cen; windV_cen; U_b_cen; V_b_cen; E_b_cen];
+            X(run + f_indx,:) = [U_cen V_cen T_cen S_cen E_cen windU_cen windV_cen U_b_cen V_b_cen E_b_cen];
             Y(run + f_indx,:) = y;
             if run == nRuns
                 f_indx = run+f_indx;
@@ -143,6 +142,12 @@ end
 % MÅ SENTERES NÅR ALLE VARIABLER HAR BLITT FUNNET FOR ALLE RUNS.
 % means og std!!!!!! ta vare på slik at jeg kan skalere tilbake og bruke
 % når modellen skal brukes!!
+
+[nObs, nVars] = size(X);
+
+[nObs, nOuts] = size(Y);
+
+%X(obs,prod(U_size)+1: prod(U_size) +  prod(V_size)) =  ( X(obs,prod(U_size)+1 : prod(U_size) +  prod(V_size)) - reshape(permute(V_avg,[2 1 3]),[1,prod(V_size)]));
 
 
 %%

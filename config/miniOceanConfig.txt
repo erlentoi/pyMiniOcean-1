@@ -5,5 +5,5 @@
 "realInitSample":75,
 "realTile":[55, 66, 55, 66],
 "realAtmoFile":"C:/Users/Neio3/Desktop/Fordypningsprosjekt/sinmod/Nor4km_atmo_converted.nc",
-"subsubArea" : [5, 10, 5, 9,1]
+"subsubArea" : [5, 10, 5, 9,2]
 }

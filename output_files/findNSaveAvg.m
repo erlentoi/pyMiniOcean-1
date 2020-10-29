@@ -2,6 +2,7 @@ file_0='init_000.nc'; %Antar vi alltid har minst 1 fil
 fileVector = [];
 fileVector= [fileVector file_0];
 file_indx = 0;
+%%%%%%%%%%%%%%%%%%%%%%%%%%ONLY RUN WITH ONE FILE%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
@@ -13,9 +14,6 @@ end
 
 
 nRuns = length(ncread("init_000.nc",'run')); %alle filer har samme antall runs
-
-NINPUT = 247; %number of input variables per run
-NOUTPUT = 162; %number of output variables per run
 
 %%
 ncid = netcdf.open('init_000.nc','NC_NOWRITE');
@@ -158,8 +156,15 @@ nccreate(filename,'E_b_avg','Datatype','double','Dimensions',{'ec_b'})
 nccreate(filename,'E_b_std','Datatype','double','Dimensions',{'ec_b'})
 %%
 %finding averages/std and writing to file
+
+
+
 U_avg=mean(transpose(U));
+
+
 V_avg = mean(transpose(V));
+
+
 
 T_avg = mean(transpose(T));
 S_avg = mean(transpose(S));

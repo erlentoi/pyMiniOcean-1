@@ -108,6 +108,14 @@ def saveInputFile(filename, iStart, iEnd, jStart, jEnd, kEnd, os, time, tEnd):
 
 
 
+
+    a_t= np.transpose(os.U[iStart:iEnd - 1, jStart:jEnd, 0:kEnd], (2, 1, 0))
+    a=os.U[iStart:iEnd - 1, jStart:jEnd, 0:kEnd]
+
+
+    b_t= np.transpose(os.V[iStart:iEnd, jStart:jEnd - 1, 0:kEnd], (2, 1, 0))
+    b= os.V[iStart:iEnd, jStart:jEnd - 1, 0:kEnd]
+
     nf.variables['U'][run_indx, time_indx, :, :, :-1] = np.transpose(os.U[iStart:iEnd - 1, jStart:jEnd, 0:kEnd], (2, 1, 0))
     nf.variables['V'][run_indx, time_indx, :, :-1, :] = np.transpose(os.V[iStart:iEnd, jStart:jEnd - 1, 0:kEnd], (2, 1, 0))
     nf.variables['W'][run_indx, time_indx, ...] = np.transpose(os.W[iStart:iEnd, jStart:jEnd, 0:kEnd], (2, 1, 0))
@@ -242,45 +250,43 @@ def loadSINMODState(sp, file, sample, subset=[],subsubArea=[]):
     os.V = np.transpose(nf.variables['v_velocity'][sample, :, subset[2]:subset[3]-1, subset[0]:subset[1]], (2, 1, 0)).copy()
 
     #################################################################
-    avgStd = Dataset("C:/Users/Neio3/Desktop/Fordypningsprosjekt/pyMiniOcean/output_files/stateAvgStd.nc", "r")
+    pertOn = False
 
-    E_std= np.transpose(avgStd.variables['E_std'][:, :]).copy()
-    T_std= np.transpose(avgStd.variables['T_std'][:, :, :]).copy()
-    S_std =np.transpose(avgStd.variables['S_std'][:, :, :]).copy()
+    if pertOn == True:
+        avgStd = Dataset("C:/Users/Neio3/Desktop/Fordypningsprosjekt/pyMiniOcean/output_files/stateAvgStd.nc", "r")
 
-    U_std = np.transpose(avgStd.variables['U_std'][:, :, :]).copy()
-    V_std = np.transpose(avgStd.variables['V_std'][:, :, :]).copy()
+        E_std= np.transpose(avgStd.variables['E_std'][:, :]).copy()
+        T_std= np.transpose(avgStd.variables['T_std'][:, :, :]).copy()
+        S_std =np.transpose(avgStd.variables['S_std'][:, :, :]).copy()
 
+        U_std = np.transpose(avgStd.variables['U_std'][:, :, :]).copy()
+        V_std = np.transpose(avgStd.variables['V_std'][:, :, :]).copy()
 
-    for x in range(subsubArea[0], subsubArea[1]):
-        for y in range(subsubArea[2], subsubArea[3]):
+        U_xlim = U_std.shape[1]
+        V_ylim = V_std.shape[0]
 
-           # print(os.E[x, y])
-           # print("+")
-            #print(E_std[y-subsubArea[2],x-subsubArea[0]])
-           # print("\n")
+        for x in range(subsubArea[0], subsubArea[1]):
+            for y in range(subsubArea[2], subsubArea[3]):
+                os.E[x, y] += E_std[y-subsubArea[2],x-subsubArea[0]]#np.random.normal(0, E_std[y-subsubArea[2],x-subsubArea[0]] * 0.05) ############## std til pertubasjon = 5% av std av variabelen
 
-            os.E[x, y] += np.random.normal(0, E_std[y-subsubArea[2],x-subsubArea[0]] * 0.05) ############## std til pertubasjon = 5% av std av variabelen
-            for z in range(0, subsubArea[4]):
+                for z in range(0, subsubArea[4]):
 
-                os.T[x, y, z] += np.random.normal(0, T_std[y - subsubArea[2], x - subsubArea[0], z]* 0.05)
-                os.S[x, y, z] += np.random.normal(0, S_std[y - subsubArea[2], x - subsubArea[0], z]* 0.05)    #####transpose?????????? indexing??????
+                    os.T[x, y, z] += np.random.normal(0, T_std[y - subsubArea[2], x - subsubArea[0], z]* 0.05)
+                    os.S[x, y, z] += np.random.normal(0, S_std[y - subsubArea[2], x - subsubArea[0], z]* 0.05)    #####transpose?????????? indexing??????
 
-                #print(x - subsubArea[0])
-                #print(y - subsubArea[2])
-                #print("")
-                if x - subsubArea[0] < x-subsubArea[1] - 1:
-                    os.U[x, y, z] += np.random.normal(0, U_std[y - subsubArea[2], x - subsubArea[0], z]* 0.05)
+                    print(x - subsubArea[0],"<", U_xlim)
+                    if x - subsubArea[0] < U_xlim:
+                        print("perturbing U")
+                        os.U[x, y, z] += U_std[y - subsubArea[2], x - subsubArea[0], z] #np.random.normal(0, U_std[y - subsubArea[2], x - subsubArea[0], z]* 0.05)
 
-                if y - subsubArea[2] < y-subsubArea[3]-1:
-                    os.V[x, y, z] += np.random.normal(0, V_std[y - subsubArea[2], x - subsubArea[0], z]* 0.05)
-
-
-
+                    print(y - subsubArea[2],"<", V_ylim)
+                    if y - subsubArea[2] < V_ylim:
+                        print("perturbing V")
+                        os.V[x, y, z] += V_std[y - subsubArea[2], x - subsubArea[0], z]#np.random.normal(0, V_std[y - subsubArea[2], x - subsubArea[0], z]* 0.05)
 
 
-    avgStd.close()
-    ##################################################
+        avgStd.close()
+        ##################################################
 
 
     #print(nf.variables['u_velocity'].shape)
@@ -334,21 +340,25 @@ def loadSINMODAtmo(file, sample, subset=[],subsubArea = []):
     WV = np.transpose(nf.variables['y_wind'][sample, subset[2]:subset[3], subset[0]:subset[1]], (1, 0)).copy()
 
     #############################################################################################################
-    avgStd = Dataset("C:/Users/Neio3/Desktop/Fordypningsprosjekt/pyMiniOcean/output_files/stateAvgStd.nc", "r")
+    pertOn = False
+    if pertOn == True:
+        avgStd = Dataset("C:/Users/Neio3/Desktop/Fordypningsprosjekt/pyMiniOcean/output_files/stateAvgStd.nc", "r")
 
-    windU_std = np.transpose(avgStd.variables['windU_std'][:, :]).copy()
-    windV_std = np.transpose(avgStd.variables['windV_std'][:, :]).copy()
+        windU_std = np.transpose(avgStd.variables['windU_std'][:, :]).copy()
+        windV_std = np.transpose(avgStd.variables['windV_std'][:, :]).copy()
 
-    for x in range(subsubArea[0], subsubArea[1]):
-        for y in range(subsubArea[2], subsubArea[3]):
-            if x - subsubArea[0] < x - subsubArea[1] - 1:
-                WU[x, y] += np.random.normal(0, windU_std[y - subsubArea[2], x - subsubArea[0]] * 0.05)
+        U_xlim = windU_std.shape[1]
+        V_ylim = windV_std.shape[0]
 
-            if y - subsubArea[2] < y - subsubArea[3] - 1:
-                WV[x, y] += np.random.normal(0, windV_std[y - subsubArea[2], x - subsubArea[0]] * 0.05)
+        for x in range(subsubArea[0], subsubArea[1]):
+            for y in range(subsubArea[2], subsubArea[3]):
+                if x - subsubArea[0] < U_xlim:
+                    WU[x, y] +=windU_std[y - subsubArea[2], x - subsubArea[0]] #np.random.normal(0, windU_std[y - subsubArea[2], x - subsubArea[0]] * 0.05)
+                if y - subsubArea[2] < V_ylim:
+                    WV[x, y] += windV_std[y - subsubArea[2], x - subsubArea[0]]#np.random.normal(0, windV_std[y - subsubArea[2], x - subsubArea[0]] * 0.05)
 
 
-    ##############################################################################################################
+        ##############################################################################################################
 
     return WU, WV
 
