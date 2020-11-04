@@ -2,6 +2,8 @@ file_0='init_000.nc'; %Antar vi alltid har minst 1 fil
 fileVector = [file_0];
 file_indx = 0;
 
+tEnd=length(ncread('init_000.nc','time'));
+
 
 %Lagrer alle filnavn i mappen i en vektor
 while isfile("init_" + num2str(file_indx+1,'%03.f') + ".nc")
@@ -12,6 +14,8 @@ end
 nRuns = length(ncread("init_000.nc",'run')); %alle filer har samme antall runs
 if fileVector == file_0
     nFiles = 1;
+else
+    nFiles = length(fileVector);
 end
 
 U_size = ncinfo('init_000.nc','U').Size([1:3]);
@@ -38,7 +42,7 @@ NINPUT = prod(U_size)+prod(V_size)+prod(T_size)+prod(S_size)+prod(E_size)...
 
 NOUTPUT = prod(U_size)+prod(V_size)+prod(T_size)+prod(S_size)+prod(E_size); %number of output variables per run per time sample
 
-X = zeros(nRuns*nFiles, NINPUT);
+X = zeros(nRuns*nFiles, NINPUT);%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Y = zeros(nRuns*nFiles, NOUTPUT); %%%%%%%%%%%%%%%%%% more time steps as outout???? must increase this then
 %%
 
@@ -87,6 +91,50 @@ if fileVector == file_0  %done because else matlab treats the vector like a stri
            
             [U_0,V_0,T_0,S_0,E_0,windU_0,windV_0,U_b_0,V_b_0,E_b_0] = getInputVars(file,run,1);
             
+            U_0_cen = (U_0-U_avg)./U_std;
+            V_0_cen = (V_0-V_avg)./V_std;
+            
+            T_0_cen = (T_0-T_avg)./T_std;
+            S_0_cen = (S_0-S_avg)./S_std;
+            E_0_cen = (E_0-E_avg)./E_std;
+            
+            windU_0_cen = (windU_0-windU_avg)./windU_std;
+            windV_0_cen = (windV_0-windV_avg)./windV_std;
+            
+            U_b_0_cen = (U_b_0-U_b_avg)./U_b_std;
+            V_b_0_cen = (V_b_0-V_b_avg)./V_b_std;
+            E_b_0_cen = (E_b_0-E_b_avg)./E_b_std;
+            
+            
+            [U_t,V_t,T_t,S_t,E_t] = createOutputColVector(file,tEnd,run); %%%specify time step here
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%CENTER Y HERE
+            
+             
+            U_t_cen = (U_t-U_avg)./U_std;
+            V_t_cen = (V_t-V_avg)./V_std;
+            
+            T_t_cen = (T_t-T_avg)./T_std;
+            S_t_cen = (S_t-S_avg)./S_std;
+            E_t_cen = (E_t-E_avg)./E_std;
+            
+            
+            X(run + f_indx,:) = [U_0_cen; V_0_cen; T_0_cen; S_0_cen; E_0_cen;...
+                windU_0_cen; windV_0_cen; U_b_0_cen; V_b_0_cen; E_b_0_cen];
+            
+            
+            Y(run + f_indx,:) =[U_t;V_t;T_t;S_t;E_t];
+            if run == nRuns
+                f_indx = run+f_indx;
+            end
+
+        end
+   
+else
+    for file = fileVector
+        for run = 1 : nRuns
+
+            [U_0,V_0,T_0,S_0,E_0,windU_0,windV_0,U_b_0,V_b_0,E_b_0] = getInputVars(file,run,1);
+            
             U_cen = (U_0-U_avg)./U_std;
             V_cen = (V_0-V_avg)./V_std;
             
@@ -102,40 +150,29 @@ if fileVector == file_0  %done because else matlab treats the vector like a stri
             E_b_cen = (E_b_0-E_b_avg)./E_b_std;
             
             
-            y = createOutputColVector(file,19,run); %%%specify time step here
+            
+            
+            [U_t,V_t,T_t,S_t,E_t] = createOutputColVector(file,tEnd,run); %%%specify time step here            
+             
+            U_t_cen = (U_t-U_avg)./U_std;
+            V_t_cen = (V_t-V_avg)./V_std;
+            
+            T_t_cen = (T_t-T_avg)./T_std;
+            S_t_cen = (S_t-S_avg)./S_std;
+            E_t_cen = (E_t-E_avg)./E_std;
+            
 
             X(run + f_indx,:) = [U_cen; V_cen; T_cen; S_cen; E_cen;...
                 windU_cen; windV_cen; U_b_cen; V_b_cen; E_b_cen];
-            Y(run + f_indx,:) = y;
-            if run == nRuns
+            
+            Y(run + f_indx,:) =[U_t;V_t;T_t;S_t;E_t];
+            if run == nRuns%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 f_indx = run+f_indx;
             end
 
         end
-   
-else
-    for file = fileVector
-        for run = 1 : nRuns
-            [U_0,V_0,T_0,S_0,E_0,windU_0,windV_0,U_b_0,V_b_0,E_b_0] = getInputVars(file,run,1);
-            
-            U_cen= (U_0-U_avg)/U_std;
-            V_cen= (V_0-V_avg)/V_std;
-            T_cen= (T_0-T_avg)/T_std;
 
-            
-            y = createOutputColVector(file,19,run); %%%specify time step here
-            
-            
-            
-            
-            X(run + f_indx,:) = x;
-            Y(run + f_indx,:) = y;
-            if run == nRuns
-                f_indx = run+f_indx;
-            end
-
-        end
-    end  
+    end
 end
 
 
@@ -147,7 +184,24 @@ end
 
 %%
 
-ncomp = 3;
+ncomp = 88; %%%%%%%%%ncomp of our new model, with model rank A, with A ≥0 and A ≤ min(K,N − 1)
 
-%[XL, YL] = plsregress(X,Y,ncomp);
+[XL, YL, XS, YS, BETA, pctvar, mse, stats] = plsregress(X,Y,ncomp,'CV',10);
+%%
+%plotting
+
+figure(1)
+plot(1:ncomp,cumsum(pctvar(2,:)),'-bo');
+xlabel('Number of PLS components');
+ylabel('Percent Variance Explained in Y');
+grid on
+
+figure(2)
+plot(0:ncomp,mse(2,:),'b-o')
+xlabel('Number of components');
+ylabel('Estimated Mean Squared Prediction Error');
+grid on
+
+
+
 

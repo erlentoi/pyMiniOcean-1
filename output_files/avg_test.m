@@ -1,7 +1,7 @@
 V_000_r=ncread('init_000.nc','V');
 V_000=V_000_r(:,1:end-1,1,:);
 
-V_000_col=reshape(V_000(1,1,:,:),[19*2,1]);
+V_000_col=reshape(V_000(1,1,:,:),[19,1]);
 
 
 V_000_meandd = mean(V_000_col);

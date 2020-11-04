@@ -1,4 +1,4 @@
-function [Y] = createOutputColVector(filename,t_sample,run_sample)
+function [U_t,V_t,T_t,S_t,E_t] = createOutputColVector(filename,t_sample,run_sample)
 U=ncread(filename,'U');
 
 [imax,jmax,kmax,tseries,runs]=size(U);
@@ -53,8 +53,5 @@ E_t=reshape(E,[imax*jmax,1]);
 
 %skalering av data . hver varaibel må sentreres rundt 0 kanskje for å være
 %sammenlignbare. gjsnitt og std avvik av hver var, deretter sentrere. 
-
-%%
-Y=vertcat(U_t,V_t,T_t,S_t,E_t);
 
 end

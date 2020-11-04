@@ -3,7 +3,7 @@
 "saveFile":"C:/Users/Neio3/Desktop/Fordypningsprosjekt/pyMiniOcean/output_files/real_gin.nc",
 "realInitFile":"C:/Users/Neio3/Desktop/Fordypningsprosjekt/sinmod/Nor4km_PhysStates.nc",
 "realInitSample":75,
-"realTile":[55, 66, 55, 66],
+"realTile":[55, 105, 55, 105],
 "realAtmoFile":"C:/Users/Neio3/Desktop/Fordypningsprosjekt/sinmod/Nor4km_atmo_converted.nc",
-"subsubArea" : [5, 10, 5, 9,2]
+"subsubArea" : [5, 15, 5, 15,3]
 }
