@@ -1,6 +1,7 @@
-[X_0,Y_0] = getInOutOneHour(0); %time 0 - hour 1
+[X_0t,Y_0t] = getInOutOneHour(0); %time 0 - hour 1
 
-[X_1,Y_1] = getInOutOneHour(1); %hour 1-2
+
+[X_1t,Y_1t] = getInOutOneHour(1); %hour 1-2
 
 
 %[X_2,Y_2] = getInOutOneHour(2); %hour 2-3
@@ -9,7 +10,7 @@
 
 
 
-%[XL_0, YL_0, XS_0, YS_0, BETA_0, pctvar_0, mse_0, stats_0] = plsregress(X_0,Y_0,ncomp);
+%[XL_0, YL_0, XS_0, YS_0, BETA_0, pcctvar_0, mse_0, stats_0] = plsregress(X_0,Y_0,ncomp);
 
 
 

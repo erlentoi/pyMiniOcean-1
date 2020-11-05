@@ -9,4 +9,3 @@ U_avg=ncread('stateAvgStd.nc','U_avg');
 U_std=ncread('stateAvgStd.nc','U_std');
 
 
-ggggg=(U_0(2)-U_avg(1,2,1))/U_std(1,2,1);

@@ -116,11 +116,11 @@ if fileVector == file_0  %done because else matlab treats the vector like a stri
             E_t_cen = (E_t-E_avg)./E_std;
             
             
-            X(run + f_indx,:) = [U_0_cen; V_0_cen; T_0_cen; S_0_cen; E_0_cen;...
+            X(run,:) = [U_0_cen; V_0_cen; T_0_cen; S_0_cen; E_0_cen;...
                 windU_0_cen; windV_0_cen; U_b_0_cen; V_b_0_cen; E_b_0_cen];
             
             
-            Y(run + f_indx,:) =[U_t;V_t;T_t;S_t;E_t];
+            Y(run,:) =[U_t;V_t;T_t;S_t;E_t];
            
 
         end
@@ -160,7 +160,7 @@ else
             X(run + f_indx,:) = [U_cen; V_cen; T_cen; S_cen; E_cen;...
                 windU_cen; windV_cen; U_b_cen; V_b_cen; E_b_cen];
             
-            Y(run + f_indx,:) =[U_t;V_t;T_t;S_t;E_t];
+            Y(run + f_indx,:) =[U_t_cen;V_t_cen;T_t_cen;S_t_cen;E_t_cen];
             if run == nRuns%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 f_indx = run+f_indx;
             end

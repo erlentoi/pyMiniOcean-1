@@ -95,6 +95,7 @@ function [X,Y] = getInOutOneHour(t_start)
 
                 [U_0,V_0,T_0,S_0,E_0,windU_0,windV_0,U_b_0,V_b_0,E_b_0] = getStatesCol(file,inputTSample,run);
 
+               
                 U_0_cen = (U_0-U_avg)./U_std;
                 V_0_cen = (V_0-V_avg)./V_std;
 
@@ -118,11 +119,12 @@ function [X,Y] = getInOutOneHour(t_start)
                 T_t_cen = (T_t-T_avg)./T_std;
                 S_t_cen = (S_t-S_avg)./S_std;
                 E_t_cen = (E_t-E_avg)./E_std;
+                
 
 
                 X(run,:) = [U_0_cen; V_0_cen; T_0_cen; S_0_cen; E_0_cen;...
                     windU_0_cen; windV_0_cen; U_b_0_cen; V_b_0_cen; E_b_0_cen];
-                Y(run,:) =[U_t;V_t;T_t;S_t;E_t];
+                Y(run,:) =[U_t_cen;V_t_cen;T_t_cen;S_t_cen;E_t_cen];
 
             end
 
@@ -158,7 +160,7 @@ function [X,Y] = getInOutOneHour(t_start)
                 X(run + f_indx,:) = [U_cen; V_cen; T_cen; S_cen; E_cen;...
                     windU_cen; windV_cen; U_b_cen; V_b_cen; E_b_cen];
 
-                Y(run + f_indx,:) =[U_t;V_t;T_t;S_t;E_t];
+                Y(run + f_indx,:) =[U_t_cen;V_t_cen;T_t_cen;S_t_cen;E_t_cen];
                 if run == nRuns%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     f_indx = run+f_indx;
                 end
