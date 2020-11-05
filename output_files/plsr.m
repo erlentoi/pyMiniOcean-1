@@ -88,8 +88,7 @@ f_indx = 0;
 if fileVector == file_0  %done because else matlab treats the vector like a string and iterates over the chars
     file = file_0;  
         for run = 1 : nRuns
-           
-            [U_0,V_0,T_0,S_0,E_0,windU_0,windV_0,U_b_0,V_b_0,E_b_0] = getInputVars(file,run,1);
+            [U_0,V_0,T_0,S_0,E_0,windU_0,windV_0,U_b_0,V_b_0,E_b_0] = getStatesCol(file,1,run);
             
             U_0_cen = (U_0-U_avg)./U_std;
             V_0_cen = (V_0-V_avg)./V_std;
@@ -106,8 +105,7 @@ if fileVector == file_0  %done because else matlab treats the vector like a stri
             E_b_0_cen = (E_b_0-E_b_avg)./E_b_std;
             
             
-            [U_t,V_t,T_t,S_t,E_t] = createOutputColVector(file,tEnd,run); %%%specify time step here
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%CENTER Y HERE
+            [U_t,V_t,T_t,S_t,E_t,~,~,~,~,~] = getStatesCol(file,tEnd,run); %%%specify time step here
             
              
             U_t_cen = (U_t-U_avg)./U_std;
@@ -123,17 +121,14 @@ if fileVector == file_0  %done because else matlab treats the vector like a stri
             
             
             Y(run + f_indx,:) =[U_t;V_t;T_t;S_t;E_t];
-            if run == nRuns
-                f_indx = run+f_indx;
-            end
+           
 
         end
    
 else
     for file = fileVector
         for run = 1 : nRuns
-
-            [U_0,V_0,T_0,S_0,E_0,windU_0,windV_0,U_b_0,V_b_0,E_b_0] = getInputVars(file,run,1);
+            [U_0,V_0,T_0,S_0,E_0,windU_0,windV_0,U_b_0,V_b_0,E_b_0] = getStatesCol(file,1,run);
             
             U_cen = (U_0-U_avg)./U_std;
             V_cen = (V_0-V_avg)./V_std;
@@ -152,7 +147,7 @@ else
             
             
             
-            [U_t,V_t,T_t,S_t,E_t] = createOutputColVector(file,tEnd,run); %%%specify time step here            
+            [U_t,V_t,T_t,S_t,E_t,~,~,~,~,~] = getStatesCol(file,tEnd,run); %%%specify time step here
              
             U_t_cen = (U_t-U_avg)./U_std;
             V_t_cen = (V_t-V_avg)./V_std;
@@ -184,9 +179,9 @@ end
 
 %%
 
-ncomp = 88; %%%%%%%%%ncomp of our new model, with model rank A, with A ≥0 and A ≤ min(K,N − 1)
+ncomp = 10; %%%%%%%%%ncomp of our new model, with model rank A, with A ≥0 and A ≤ min(K,N − 1)
 
-[XL, YL, XS, YS, BETA, pctvar, mse, stats] = plsregress(X,Y,ncomp,'CV',10);
+[XL, YL, XS, YS, BETA, pctvar, mse, stats] = plsregress(X,Y,ncomp);
 %%
 %plotting
 
@@ -201,6 +196,25 @@ plot(0:ncomp,mse(2,:),'b-o')
 xlabel('Number of components');
 ylabel('Estimated Mean Squared Prediction Error');
 grid on
+
+
+
+
+%Y_fit  = [1 X(10,:)]*BETA;
+
+%Y_simulated = Y(1,:);
+
+
+%figure(4)
+%plot(1:NOUTPUT, Y_fit,'o',1:NOUTPUT,Y_simulated,'*')
+%grid on
+
+%Y_diff=Y_fit-Y_simulated;
+%
+%plotte strømninger: pcolor strømashiget (må velge zlag). hold on quiver for å få
+%inn piler(tar inn to felt, u og v)
+%tids utvikling: velge dybdgelag og noen få punkter og plotte i tid. evt
+%avvik. for å sammenligne felt: kan trekke fra quiver.
 
 
 
