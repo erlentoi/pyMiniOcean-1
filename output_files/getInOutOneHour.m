@@ -93,7 +93,7 @@ function [X,Y] = getInOutOneHour(t_start)
         file = file_0;  
             for run = 1 : nRuns
 
-                [U_0,V_0,T_0,S_0,E_0,windU_0,windV_0,U_b_0,V_b_0,E_b_0] = getStatesCol(file,1,run);
+                [U_0,V_0,T_0,S_0,E_0,windU_0,windV_0,U_b_0,V_b_0,E_b_0] = getStatesCol(file,inputTSample,run);
 
                 U_0_cen = (U_0-U_avg)./U_std;
                 V_0_cen = (V_0-V_avg)./V_std;
@@ -110,7 +110,7 @@ function [X,Y] = getInOutOneHour(t_start)
                 E_b_0_cen = (E_b_0-E_b_avg)./E_b_std;
 
 
-                [U_t,V_t,T_t,S_t,E_t,~,~,~,~,~] = getStatesCol(file,tEnd,run); %%%specify time step here
+                [U_t,V_t,T_t,S_t,E_t,~,~,~,~,~] = getStatesCol(file,outputTSample,run); %%%specify time step here
 
                 U_t_cen = (U_t-U_avg)./U_std;
                 V_t_cen = (V_t-V_avg)./V_std;
@@ -129,8 +129,6 @@ function [X,Y] = getInOutOneHour(t_start)
     else
         for file = fileVector
             for run = 1 : nRuns
-                file
-                run
                 [U_0,V_0,T_0,S_0,E_0,windU_0,windV_0,U_b_0,V_b_0,E_b_0] = getStatesCol(file,1,run);
 
                 U_cen = (U_0-U_avg)./U_std;
