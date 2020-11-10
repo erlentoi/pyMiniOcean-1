@@ -1,10 +1,7 @@
-function [U_0,V_0,T_0,S_0,E_0,windU_0,windV_0,U_b_0,V_b_0,E_b_0] = getStatesCol(filename,t_sample,run_sample)
+function [U,V,T,S,E,windU,windV,U_b,V_b,E_b] = getCenteredStatesCol(filename,t_sample,run_sample)
 %Reading States
 U=ncread(filename,'U');
-
 [imax,jmax,kmax,tseries,runs]=size(U);
-%%%%%%%%%%%%%%%%%%%%%%%%% x,y,z,time,run %%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%
 %states
@@ -52,19 +49,19 @@ E_b = E_b(:,t_sample,run_sample);
 %%
 %Shaping into column vectors
 
-U_0=reshape(U,[(imax-1)*jmax*kmax,1]); 
-V_0=reshape(V,[imax*(jmax-1)*kmax,1]);
+U=reshape(U,[(imax-1)*jmax*kmax,1]); 
+V=reshape(V,[imax*(jmax-1)*kmax,1]);
 %W_0=rehsape(W,[imax*jmax*kmax,1]);
-T_0=reshape(T,[imax*jmax*kmax,1]);
-S_0=reshape(S,[imax*jmax*kmax,1]);
-E_0=reshape(E,[imax*jmax,1]);
+T=reshape(T,[imax*jmax*kmax,1]);
+S=reshape(S,[imax*jmax*kmax,1]);
+E=reshape(E,[imax*jmax,1]);
 
-windU_0=reshape(windU,[(imax-1)*jmax,1]);
-windV_0=reshape(windV,[imax*(jmax-1),1]);
+windU=reshape(windU,[(imax-1)*jmax,1]);
+windV=reshape(windV,[imax*(jmax-1),1]);
 
-U_b_0 = reshape(U_b,[xc_b*kmax,1]);
-V_b_0 = reshape(V_b,[yc_b*kmax,1]);
-E_b_0 = reshape(E_b,[ec_b,1]);
+U_b = reshape(U_b,[xc_b*kmax,1]);
+V_b = reshape(V_b,[yc_b*kmax,1]);
+E_b = reshape(E_b,[ec_b,1]);
 
 
 

@@ -1,0 +1,23 @@
+function [avg,std] = avgStdVector(matrix)
+
+    [rows,cols]=size(Matrix);
+
+    avg = zeros(cols,1);
+    std = zeros(cols,1);
+    
+    for i = 1:cols
+        avg(i) = 
+    
+    
+    
+    
+    end
+
+
+
+
+
+
+
+end
+
