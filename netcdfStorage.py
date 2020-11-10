@@ -262,7 +262,7 @@ def loadSINMODState(sp, file, sample, subset=[],subsubArea=[]):
 
         for x in range(subsubArea[0], subsubArea[1]):
             for y in range(subsubArea[2], subsubArea[3]):
-                os.E[x, y] += E_std[y-subsubArea[2],x-subsubArea[0]]#np.random.normal(0, E_std[y-subsubArea[2],x-subsubArea[0]] * 0.05) ############## std til pertubasjon = 5% av std av variabelen
+                os.E[x, y] += np.random.normal(0, E_std[y-subsubArea[2], x-subsubArea[0]] * 0.02)      #np.random.normal(0, E_std[y-subsubArea[2],x-subsubArea[0]] * 0.05) ############## std til pertubasjon = 5% av std av variabelen
 
                 for z in range(0, subsubArea[4]):
 

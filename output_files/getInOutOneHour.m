@@ -11,11 +11,14 @@ function [X,Y] = getInOutOneHour(t_start)
     timeVector = ncread('init_000.nc','time');
     stepLength = diff(timeVector(1:2));
 
+       
     inputTSample = (3600*t_start)/stepLength + 1;
     outputTSample = inputTSample + 3600/stepLength;
     
-    
+    inputTSample
+    outputTSample
 
+    
     %Lagrer alle filnavn i mappen i en vektor
     while isfile("init_" + num2str(file_indx+1,'%03.f') + ".nc")
         file_indx = file_indx + 1;
@@ -46,7 +49,7 @@ function [X,Y] = getInOutOneHour(t_start)
     E_b_size = ncinfo('init_000.nc','E_b').Size([1]);
 
     NINPUT = prod(U_size)+prod(V_size)+prod(T_size)+prod(S_size)+prod(E_size)...
-        +prod(windU_size)+prod(windV_size)+prod(U_b_size)+prod(V_b_size)+ prod(E_b_size);
+        +prod(windU_size)+prod(windV_size);%+prod(U_b_size)+prod(V_b_size)+ prod(E_b_size);
 
     NOUTPUT = prod(U_size)+prod(V_size)+prod(T_size)+prod(S_size)+prod(E_size);
 
@@ -58,14 +61,12 @@ function [X,Y] = getInOutOneHour(t_start)
         file = file_0;  
             for run = 1 : nRuns
 
-                [U_0,V_0,T_0,S_0,E_0,windU_0,windV_0,U_b_0,...
-                    V_b_0,E_b_0] = getCenteredStatesCol(file,inputTSample,run);
+                [U_0,V_0,T_0,S_0,E_0,windU_0,windV_0,~,~,~] = getStatesCol(file,inputTSample,run);
 
                 
                 [U_t,V_t,T_t,S_t,E_t,~,~,~,~,~] = getStatesCol(file,outputTSample,run); %%%specify time step here
 
-                X(run,:) = [U_0; V_0; T_0; S_0; E_0;...
-                    windU_0; windV_0; U_b_0; V_b_0; E_b_0];
+                X(run,:) = [U_0; V_0; T_0; S_0; E_0;windU_0; windV_0];
                 
                 Y(run,:) =[U_t;V_t;T_t;S_t;E_t];
 
@@ -74,14 +75,13 @@ function [X,Y] = getInOutOneHour(t_start)
     else
         for file = fileVector
             for run = 1 : nRuns
-                [U_0,V_0,T_0,S_0,E_0,windU_0,windV_0,U_b_0,V_b_0,E_b_0] = getCenteredStatesCol(file,1,run);
+                [U_0,V_0,T_0,S_0,E_0,windU_0,windV_0,~,~,~] = getStatesCol(file,inputTSample,run);
 
 
-                [U_t,V_t,T_t,S_t,E_t,~,~,~,~,~] = getStatesCol(file,tEnd,run); %%%specify time step here
+                [U_t,V_t,T_t,S_t,E_t,~,~,~,~,~] = getStatesCol(file,outputTSample,run); %%%specify time step here
 
 
-                X(run + f_indx,:) = [U_0; V_0; T_0; S_0; E_0;...
-                    windU_0; windV_0; U_b_0; V_b_0; E_b_0];
+                X(run + f_indx,:) = [U_0; V_0; T_0; S_0; E_0;windU_0; windV_0];
 
                 Y(run + f_indx,:) =[U_t;V_t;T_t;S_t;E_t];
                 if run == nRuns

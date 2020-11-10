@@ -39,7 +39,7 @@ E_b_size = ncinfo('init_000.nc','E_b').Size([1]);
 nTimeSteps = ncinfo('init_000.nc','time').Size;
 
 NINPUT = prod(U_size)+prod(V_size)+prod(T_size)+prod(S_size)+prod(E_size)...
-    +prod(windU_size)+prod(windV_size)+prod(U_b_size)+prod(V_b_size)+ prod(E_b_size);
+    +prod(windU_size)+prod(windV_size);%+prod(U_b_size)+prod(V_b_size)+ prod(E_b_size);
 
 NOUTPUT = prod(U_size)+prod(V_size)+prod(T_size)+prod(S_size)+prod(E_size); %number of output variables per run per time sample
 
@@ -50,12 +50,12 @@ f_indx = 0;
 if fileVector == file_0  %done because else matlab treats the vector like a string and iterates over the chars
     file = file_0;  
         for run = 1 : nRuns
-            [U_0,V_0,T_0,S_0,E_0,windU_0,windV_0,U_b_0,V_b_0,E_b_0] = getStatesCol(file,1,run);
+            [U_0,V_0,T_0,S_0,E_0,windU_0,windV_0,~,~,~] = getStatesCol(file,1,run);
       
             [U_t,V_t,T_t,S_t,E_t,~,~,~,~,~] = getStatesCol(file,tEnd,run); %%%specify time step here
             
             X(run,:) = [U_0; V_0; T_0; S_0; E_0;...
-                windU_0; windV_0; U_b_0; V_b_0; E_b_0];
+                windU_0; windV_0];
                     
             Y(run,:) =[ U_t;V_t; T_t;S_t; E_t];
            
@@ -65,12 +65,14 @@ if fileVector == file_0  %done because else matlab treats the vector like a stri
 else
     for file = fileVector
         for run = 1 : nRuns
-            [U_0,V_0,T_0,S_0,E_0,windU_0,windV_0,U_b_0,V_b_0,E_b_0] = getStatesCol(file,1,run);
+
+            file
+            [U_0,V_0,T_0,S_0,E_0,windU_0,windV_0,~,~,~] = getStatesCol(file,1,run);
             
             [U_t,V_t,T_t,S_t,E_t,~,~,~,~,~] = getStatesCol(file,tEnd,run); %%%specify time step here
 
             X(run + f_indx,:) = [U_0; V_0; T_0; S_0; E_0;...
-                windU_0; windV_0; U_b_0; V_b_0; E_b_0];
+                windU_0; windV_0];% U_b_0; V_b_0; E_b_0
             
             Y(run + f_indx,:) =[U_t;V_t;T_t;S_t;E_t];
             if run == nRuns%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -91,13 +93,8 @@ end
 
 %%
 %centering
-[X_mean,X_std] = avgStdVector(X);
-[Y_mean,Y_std] = avgStdVector(Y);
-
-
-%X = (X-X_mean)./X_std;
-%Y = (Y-Y_mean)./Y_std;
-
+[X_z,Xmu,Xsigma] = zscore(X);
+[Y_z,Ymu,Ysigma] = zscore(Y);
 
 ncomp = 280; %%%%%%%%%ncomp of our new model, with model rank A, with A ≥0 and A ≤ min(K,N − 1)
 
